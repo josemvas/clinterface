@@ -47,26 +47,28 @@ class Dialogs:
         self.check_color = check_color
         self.check_on_switch = check_on_switch
 
-    def optone(self, prompt='', choices=[], default=0):
+    def optone(self, prompt='', choices=[], default=None):
         if not choices:
             raise ValueError('Choices can not be empty!')
         if prompt:
             utils.forceWrite(' ' * self.indent + prompt + '\n')
             utils.forceWrite('\n' * self.shift)
-        if default is not 0:
-            if type(default).__name__ != 'int':
-                raise TypeError('`default` should be an integer value!')
-            if not 0 <= int(default) < len(self.choices):
-                raise ValueError('`default` should be in range [0, len(choices))!')
+        if default is None:
+            default = choices[0]
+        else:
+            if not default in choices:
+                raise ValueError('`default` should be an element of `choices`!')
         return OptOne(self, choices, default).launch()
 
-    def optany(self, prompt='', choices=[], default=[]):
+    def optany(self, prompt='', choices=[], default=None):
         if not choices:
             raise ValueError("Choices can not be empty!")
         if prompt:
             utils.forceWrite(' ' * self.indent + prompt + '\n')
             utils.forceWrite('\n' * self.shift)
-        if default is not []:
+        if default is None:
+            default = []
+        else:
             if not type(default).__name__ == 'list':
                 raise TypeError('`default` should be a list!')
             if not all([i in choices for i in default]):
@@ -89,7 +91,7 @@ class OptOne:
         self.background_on_switch = itself.background_on_switch
         self.max_width = len(max(choices, key = len)) + itself.pad_right
         self.choices = choices
-        self.pos = default
+        self.pos = choices.index(default)
 
     def renderBullets(self):
         for i in range(len(self.choices)):
