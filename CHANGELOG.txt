@@ -1,0 +1,4 @@
+# Changelog
+
+client.py
+All classes will be replaced by the `Dialogs` main public class and auxiliary private classes

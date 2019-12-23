@@ -102,10 +102,10 @@ def forceWrite(s, end = ''):
     sys.stdout.flush()
 
 def cprint(
-        s: str, 
-        color: str = colors.foreground["default"], 
-        on: str = colors.background["default"], 
-        end: str = '\n'
+        s, 
+        color = colors.foreground["default"], 
+        on = colors.background["default"], 
+        end = '\n'
     ):
     ''' Colored print function.
     Args:
