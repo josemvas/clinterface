@@ -13,7 +13,7 @@ setup_time = time.time()
 import setuptools
 setuptools.setup()
 
-# Clean only new generated build and dist-egg files
+# Clean newly generated build and dist-egg files
 import os
 import glob
 def rmtree(path):
