@@ -1,8 +1,5 @@
-# Changelog
-
-- At forking `bullet` the fork was renamed to `bulletin`.
-
-- Any file not listed below has not changed since the fork.
+`bulletin` is a fork of `https://github.com/Mckinsey666/bullet`
+Any file not listed below has not changed since the fork.
 
 client.py
 This file includes a single public class `Dialog` which replaces the original client.py classes `Bullet` and `Check`. Other classes in the original client.py module are not yet reimplemented.
