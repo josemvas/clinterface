@@ -1,4 +1,11 @@
 # Changelog
 
+- At forking `bullet` the fork was renamed to `bulletin`.
+
+- Any file not listed below has not changed since the fork.
+
 client.py
-All classes will be replaced by the `Dialogs` main public class and auxiliary private classes
+This file includes a single public class `Dialog` which replaces the original client.py classes `Bullet` and `Check`. Other classes in the original client.py module are not yet reimplemented.
+
+bullet-client-backup.py
+This file is a backup of the client.py file found in the original `bullet` package.
