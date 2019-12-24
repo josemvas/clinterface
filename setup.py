@@ -1,20 +1,23 @@
 # Oldest Setuptools version supporting metadata in setup.cfg
 setuptools_requires = '30.3.0'
 
-# Record time before setup
+import sys
+import setuptools
+from distutils.version import StrictVersion
 from time import time
+
+# Record time before setup
 setup_time = time()
 
 # Setup package if Setuptools is new enough to read metadata from setup.cfg file
-import setuptools
-from distutils.version import StrictVersion
 if StrictVersion(setuptools.__version__) < StrictVersion(setuptools_requires):
     sys.exit('SetupTools {0} or higher is required to setup this package.'.format(setuptools_requires))
 setuptools.setup()
 
-# Clean generated build and dist-egg files
 import os
 from glob import glob
+
+# Clean generated build and dist-egg files
 def rmtree(path):
     for root, dirs, files in os.walk(path, topdown=False):
         for f in files:
