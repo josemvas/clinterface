@@ -1,4 +1,9 @@
+# Compiled
+*.egg-info/
+build/
+dist/
+
+# Distribution
 __pycache__/
-/bulletin.egg-info/
-/build/
-/dist/
+*.py[cod]
+
