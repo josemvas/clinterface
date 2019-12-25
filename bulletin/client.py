@@ -7,44 +7,40 @@ from . import keyhandler
 import readline
 import re
 
-
 class Dialog:
     def __init__(
             self, 
-            pad_right                 = 0,
-            indent                    = 0,
-            align                     = 0,
-            margin                    = 0,
             shift                     = 0,
-            check                     = 'X', 
-            nocheck                   = 'O', 
+            align                     = 0,
+            indent                    = 0,
+            margin                    = 0,
+            pad_left                  = 0,
+            pad_right                 = 0,
+            check                     = '>', 
+            nocheck                   = None, 
+            check_color               = colors.foreground['default'],
+            check_on_switch           = colors.REVERSE,
             word_color                = colors.foreground['default'],
             word_on_switch            = colors.REVERSE,
             background_color          = colors.background['default'],
             background_on_switch      = colors.REVERSE,
-            bullet_color              = colors.foreground['default'],
-            check_color               = colors.foreground['default'],
-            check_on_switch           = colors.REVERSE,
         ):
 
-        if indent < 0:
-            raise ValueError('Indent must be > 0!')
-        if margin < 0:
-            raise ValueError('Margin must be > 0!')
-
-        self.indent = indent
-        self.align = align
-        self.margin = margin
-        self.shift = shift
         self.word_color = word_color
         self.word_on_switch = word_on_switch
         self.background_color = background_color
         self.background_on_switch = background_on_switch
-        self.pad_right = pad_right
-        self.check = check if check is not None else ' '
-        self.nocheck = nocheck if nocheck is not None else ' '
         self.check_color = check_color
         self.check_on_switch = check_on_switch
+
+        self.align = max(int(align), 0)
+        self.shift = max(int(shift), 0)
+        self.indent = max(int(indent), 0)
+        self.margin = max(int(margin), 0)
+        self.pad_left = max(int(pad_left), 0)
+        self.pad_right = max(int(pad_right), 0)
+        self.check = str(check) if check is not None else ' '
+        self.nocheck = str(nocheck) if nocheck is not None else ' '
 
     def optone(self, prompt='', choices=[], default=None):
         if not choices:
@@ -78,10 +74,11 @@ class Dialog:
 @keyhandler.init
 class OptOne:
     def __init__(self, itself, choices, default):
-        self.indent = itself.indent
         self.align = itself.align
-        self.margin = itself.margin
         self.shift = itself.shift
+        self.margin = itself.margin
+        self.indent = itself.indent
+        self.pad_left = itself.pad_left
         self.check = itself.check
         self.nocheck = itself.nocheck
         self.check_color = itself.check_color
@@ -104,6 +101,7 @@ class OptOne:
         back_color = self.background_on_switch if idx == self.pos else self.background_color
         word_color = self.word_on_switch if idx == self.pos else self.word_color
         check_color = self.check_on_switch if idx == self.pos else self.check_color
+        utils.cprint(' ' * self.pad_left, on = back_color, end = '')
         if idx == self.pos:
             utils.cprint('{}'.format(self.check) + ' ' * self.margin, check_color, back_color, end = '')
         else:
@@ -161,10 +159,11 @@ class OptOne:
 @keyhandler.init
 class OptAny:
     def __init__(self, itself, choices, default):
-        self.indent = itself.indent
         self.align = itself.align
-        self.margin = itself.margin
         self.shift = itself.shift
+        self.indent = itself.indent
+        self.margin = itself.margin
+        self.pad_left = itself.pad_left
         self.check = itself.check
         self.nocheck = itself.nocheck
         self.check_color = itself.check_color
@@ -188,6 +187,7 @@ class OptAny:
         back_color = self.background_on_switch if idx == self.pos else self.background_color
         word_color = self.word_on_switch if idx == self.pos else self.word_color
         check_color = self.check_on_switch if idx == self.pos else self.check_color
+        utils.cprint(' ' * self.pad_left, on = back_color, end = '')
         if self.checked[idx]:
             utils.cprint('{}'.format(self.check) + ' ' * self.margin, check_color, back_color, end = '')
         else:

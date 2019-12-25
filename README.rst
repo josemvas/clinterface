@@ -4,18 +4,37 @@ bulletIn: Interactive Python prompts made simple
 
 `bulletIn <https://github.com/cronofugo/bulletin>`_ is a fork of `bullet. <https://github.com/Mckinsey666/bullet>`_
  
-Usage examples
-***************
+Quick start
+***********
 
-Import module and initialize class
+Import the bulletin module:
 
 .. code-block:: python
 
    import bulletin
-   # Dialog aspect is set at initialization
-   dialog = bulletin.Dialog(margin=1, pad_right=1, check='>', nocheck=None)
 
-Choose only one option
+Instantiate a dialog object:
+
+.. code-block:: python
+
+   dialog = bulletin.Dialog()
+
+or instantiate a customized dialog object:
+
+.. code-block:: python
+
+   import bulletin
+   dialog = bulletin.Dialog(
+      shift = 1,
+      indent = 3,
+      align = 2,
+      margin = 1,
+      pad_left = 1,
+      pad_right = 1,
+      check = 'X',
+      nocheck = 'O')
+
+Launch a dialog to select only one option:
 
 .. code-block:: python
 
@@ -24,7 +43,7 @@ Choose only one option
        choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
        default='Tuesday')
 
-Choose one or more options
+or launch a dialog to select one or more option:
 
 .. code-block:: python
 
