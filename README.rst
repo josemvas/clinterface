@@ -29,7 +29,7 @@ Choose one or more options
 .. code-block:: python
 
    dialog.optany(
-       prompt='Choose two working days:',
+       prompt='Choose your working days:',
        choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
        default=['Monday', 'Wednesday'])
 
