@@ -1,8 +1,8 @@
 ################################################
-bulletIn: Interactive Python prompts made simple
+BulletIn: Interactive Python prompts made simple
 ################################################
 
-`bulletIn <https://github.com/cronofugo/bulletin>`_ is a fork of `bullet. <https://github.com/Mckinsey666/bullet>`_
+`BulletIn <https://github.com/cronofugo/bulletin>`_ is a fork of `bullet. <https://github.com/Mckinsey666/bullet>`_
  
 Quick start
 ***********
@@ -42,7 +42,7 @@ Launch a dialog to select only one option
        choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
        default='Tuesday')
 
-or launch a dialog to select one or more option
+or launch a dialog to select one or more options
 
 .. code-block:: python
 
