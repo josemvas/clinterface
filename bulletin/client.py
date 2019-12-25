@@ -137,9 +137,7 @@ class OptOne:
     @keyhandler.register(NEWLINE_KEY)
     def accept(self):
         utils.moveCursorDown(len(self.choices) - self.pos)
-        ret = self.choices[self.pos]
-        self.pos = 0
-        return ret
+        return self.choices[self.pos]
 
     @keyhandler.register(INTERRUPT_KEY)
     def interrupt(self):
@@ -228,10 +226,7 @@ class OptAny:
     @keyhandler.register(NEWLINE_KEY)
     def accept(self):
         utils.moveCursorDown(len(self.choices) - self.pos)
-        ret = [self.choices[i] for i in range(len(self.choices)) if self.checked[i]]
-        self.pos = 0
-        self.checked = [False] * len(self.choices)
-        return ret
+        return [self.choices[i] for i in range(len(self.choices)) if self.checked[i]]
 
     @keyhandler.register(INTERRUPT_KEY)
     def interrupt(self):
