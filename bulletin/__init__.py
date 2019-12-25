@@ -1,1 +1,1 @@
-from .client import Dialogs
+from .client import Dialog

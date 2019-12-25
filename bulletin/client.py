@@ -8,7 +8,7 @@ import readline
 import re
 
 
-class Dialogs:
+class Dialog:
     def __init__(
             self, 
             pad_right                 = 0,
@@ -17,20 +17,21 @@ class Dialogs:
             margin                    = 0,
             shift                     = 0,
             bullet                    = '>', 
-            check                     = '#', 
-            word_color                = colors.foreground["default"],
+            check                     = 'X', 
+            nocheck                   = 'O', 
+            word_color                = colors.foreground['default'],
             word_on_switch            = colors.REVERSE,
-            background_color          = colors.background["default"],
+            background_color          = colors.background['default'],
             background_on_switch      = colors.REVERSE,
-            bullet_color              = colors.foreground["default"],
-            check_color               = colors.foreground["default"],
+            bullet_color              = colors.foreground['default'],
+            check_color               = colors.foreground['default'],
             check_on_switch           = colors.REVERSE,
         ):
 
         if indent < 0:
-            raise ValueError("Indent must be > 0!")
+            raise ValueError('Indent must be > 0!')
         if margin < 0:
-            raise ValueError("Margin must be > 0!")
+            raise ValueError('Margin must be > 0!')
 
         self.indent = indent
         self.align = align
@@ -44,6 +45,7 @@ class Dialogs:
         self.bullet = bullet
         self.bullet_color = bullet_color
         self.check = check
+        self.nocheck = nocheck
         self.check_color = check_color
         self.check_on_switch = check_on_switch
 
@@ -62,7 +64,7 @@ class Dialogs:
 
     def optany(self, prompt='', choices=[], default=None):
         if not choices:
-            raise ValueError("Choices can not be empty!")
+            raise ValueError('Choices can not be empty!')
         if prompt:
             utils.forceWrite(' ' * self.indent + prompt + '\n')
             utils.forceWrite('\n' * self.shift)
@@ -103,9 +105,9 @@ class OptOne:
         back_color = self.background_on_switch if idx == self.pos else self.background_color
         word_color = self.word_on_switch if idx == self.pos else self.word_color
         if idx == self.pos:
-            utils.cprint("{}".format(self.bullet) + " " * self.margin, self.bullet_color, back_color, end = '')
+            utils.cprint('{}'.format(self.bullet) + ' ' * self.margin, self.bullet_color, back_color, end = '')
         else:
-            utils.cprint(" " * (len(self.bullet) + self.margin), self.bullet_color, back_color, end = '')
+            utils.cprint(' ' * (len(self.bullet) + self.margin), self.bullet_color, back_color, end = '')
         utils.cprint(self.choices[idx], word_color, back_color, end = '')
         utils.cprint(' ' * (self.max_width - len(self.choices[idx])), on = back_color, end = '')
         utils.moveCursorHead()
@@ -164,6 +166,7 @@ class OptAny:
         self.margin = itself.margin
         self.shift = itself.shift
         self.check = itself.check
+        self.nocheck = itself.nocheck
         self.check_color = itself.check_color
         self.check_on_switch = itself.check_on_switch
         self.word_color = itself.word_color
@@ -186,9 +189,9 @@ class OptAny:
         word_color = self.word_on_switch if idx == self.pos else self.word_color
         check_color = self.check_on_switch if idx == self.pos else self.check_color
         if self.checked[idx]:
-            utils.cprint("{}".format(self.check) + " " * self.margin, check_color, back_color, end = '')
+            utils.cprint('{}'.format(self.check) + ' ' * self.margin, check_color, back_color, end = '')
         else:
-            utils.cprint(" " * (len(self.check) + self.margin), check_color, back_color, end = '')
+            utils.cprint('{}'.format(self.nocheck) + ' ' * self.margin, check_color, back_color, end = '')
         utils.cprint(self.choices[idx], word_color, back_color, end = '')
         utils.cprint(' ' * (self.max_width - len(self.choices[idx])), on = back_color, end = '')
         utils.moveCursorHead()

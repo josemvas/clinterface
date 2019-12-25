@@ -7,13 +7,19 @@ Bulletin: Interactive Python prompts made simple
 Usage examples
 ***************
 
-Choose only one option
+Import module and initialize class
 
 .. code-block:: python
 
    import bulletin
-   dialogs = bulletin.Dialogs(margin=1, pad_right=1)
-   dialogs.optone(
+   # Dialog aspect is set at initialization
+   dialog = bulletin.Dialog(margin=1, pad_right=1)
+
+Choose only one option
+
+.. code-block:: python
+
+   dialog.optone(
        prompt='Choose one working day:',
        choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
        default='Tuesday')
@@ -22,9 +28,7 @@ Choose one or more options
 
 .. code-block:: python
 
-   import bulletin
-   dialogs = bulletin.Dialogs(margin=1, pad_right=1)
-   dialogs.optany(
+   dialog.optany(
        prompt='Choose two working days:',
        choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
        default=['Monday', 'Wednesday'])
