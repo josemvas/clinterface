@@ -38,16 +38,16 @@ Launch a dialog to select only one option
 .. code-block:: python
 
    dialog.optone(
-       prompt='Choose one working day:',
-       choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-       default='Tuesday')
+       prompt='Choose the best day:',
+       choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+       default='Saturday')
 
 or launch a dialog to select one or more options
 
 .. code-block:: python
 
    dialog.optany(
-       prompt='Choose your working days:',
-       choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-       default=['Monday', 'Wednesday'])
+       prompt='Choose the better days:',
+       choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+       default=['Monday', 'Wednesday', 'Saturday'])
 
