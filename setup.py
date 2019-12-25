@@ -25,9 +25,9 @@ def rmtree(path):
         for d in dirs:
             delete_newer(os.path.join(root, d), setup_time, os.rmdir)
         delete_newer(path, setup_time, os.rmdir)
-def delete_newer(node, time, remove):
+def delete_newer(node, time, delete):
     if os.path.getctime(node) > time:
-        try: remove(node)
+        try: delete(node)
         except OSError: pass
 rmtree('./build')
 for d in glob('./*.egg-info'):
