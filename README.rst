@@ -1,8 +1,8 @@
 ################################################
-BulletIn: Interactive Python prompts made simple
+bulletIn: Interactive Python prompts made simple
 ################################################
 
-`BulletIn <https://github.com/cronofugo/bulletin>`_ is a fork of `bullet. <https://github.com/Mckinsey666/bullet>`_
+`bulletIn <https://github.com/cronofugo/bulletin>`_ is a fork of `bullet. <https://github.com/Mckinsey666/bullet>`_
  
 Quick start
 ***********
@@ -13,13 +13,13 @@ Import the bulletin module
 
    import bulletin
 
-Instantiate a default dialog object
+Instantiate a default dialog instance
 
 .. code-block:: python
 
    dialog = bulletin.Dialog()
 
-or instantiate a customized dialog object
+or instantiate a customized dialog instance
 
 .. code-block:: python
 
