@@ -1,8 +1,8 @@
 ################################################
-Bulletin: Interactive Python prompts made simple
+bulletIn: Interactive Python prompts made simple
 ################################################
 
-`Bulletin <https://github.com/cronofugo/bulletin>`_ is a fork of `bullet. <https://github.com/Mckinsey666/bullet>`_
+`bulletIn <https://github.com/cronofugo/bulletin>`_ is a fork of `bullet. <https://github.com/Mckinsey666/bullet>`_
  
 Usage examples
 ***************
@@ -13,7 +13,7 @@ Import module and initialize class
 
    import bulletin
    # Dialog aspect is set at initialization
-   dialog = bulletin.Dialog(margin=1, pad_right=1)
+   dialog = bulletin.Dialog(margin=1, pad_right=1, check='>', nocheck=None)
 
 Choose only one option
 

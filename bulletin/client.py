@@ -41,8 +41,8 @@ class Dialog:
         self.background_color = background_color
         self.background_on_switch = background_on_switch
         self.pad_right = pad_right
-        self.check = check
-        self.nocheck = nocheck
+        self.check = check if check is not None else ' '
+        self.nocheck = nocheck if nocheck is not None else ' '
         self.check_color = check_color
         self.check_on_switch = check_on_switch
 
