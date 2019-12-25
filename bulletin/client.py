@@ -16,7 +16,6 @@ class Dialog:
             align                     = 0,
             margin                    = 0,
             shift                     = 0,
-            bullet                    = '>', 
             check                     = 'X', 
             nocheck                   = 'O', 
             word_color                = colors.foreground['default'],
@@ -42,8 +41,6 @@ class Dialog:
         self.background_color = background_color
         self.background_on_switch = background_on_switch
         self.pad_right = pad_right
-        self.bullet = bullet
-        self.bullet_color = bullet_color
         self.check = check
         self.nocheck = nocheck
         self.check_color = check_color
@@ -85,8 +82,10 @@ class OptOne:
         self.align = itself.align
         self.margin = itself.margin
         self.shift = itself.shift
-        self.bullet = itself.bullet
-        self.bullet_color = itself.bullet_color
+        self.check = itself.check
+        self.nocheck = itself.nocheck
+        self.check_color = itself.check_color
+        self.check_on_switch = itself.check_on_switch
         self.word_color = itself.word_color
         self.word_on_switch = itself.word_on_switch
         self.background_color = itself.background_color
@@ -104,10 +103,11 @@ class OptOne:
         utils.forceWrite(' ' * (self.indent + self.align))
         back_color = self.background_on_switch if idx == self.pos else self.background_color
         word_color = self.word_on_switch if idx == self.pos else self.word_color
+        check_color = self.check_on_switch if idx == self.pos else self.check_color
         if idx == self.pos:
-            utils.cprint('{}'.format(self.bullet) + ' ' * self.margin, self.bullet_color, back_color, end = '')
+            utils.cprint('{}'.format(self.check) + ' ' * self.margin, check_color, back_color, end = '')
         else:
-            utils.cprint(' ' * (len(self.bullet) + self.margin), self.bullet_color, back_color, end = '')
+            utils.cprint('{}'.format(self.nocheck) + ' ' * self.margin, check_color, back_color, end = '')
         utils.cprint(self.choices[idx], word_color, back_color, end = '')
         utils.cprint(' ' * (self.max_width - len(self.choices[idx])), on = back_color, end = '')
         utils.moveCursorHead()
