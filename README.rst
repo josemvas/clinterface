@@ -13,7 +13,7 @@ Import the bulletin module
 
    import bulletin
 
-Instantiate a dialog object
+Instantiate a default dialog object
 
 .. code-block:: python
 
