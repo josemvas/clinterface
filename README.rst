@@ -7,23 +7,22 @@ bulletIn: Interactive Python prompts made simple
 Quick start
 ***********
 
-Import the bulletin module:
+Import the bulletin module
 
 .. code-block:: python
 
    import bulletin
 
-Instantiate a dialog object:
+Instantiate a dialog object
 
 .. code-block:: python
 
    dialog = bulletin.Dialog()
 
-or instantiate a customized dialog object:
+or instantiate a customized dialog object
 
 .. code-block:: python
 
-   import bulletin
    dialog = bulletin.Dialog(
       shift = 1,
       indent = 3,
@@ -34,7 +33,7 @@ or instantiate a customized dialog object:
       check = 'X',
       nocheck = 'O')
 
-Launch a dialog to select only one option:
+Launch a dialog to select only one option
 
 .. code-block:: python
 
@@ -43,7 +42,7 @@ Launch a dialog to select only one option:
        choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
        default='Tuesday')
 
-or launch a dialog to select one or more option:
+or launch a dialog to select one or more option
 
 .. code-block:: python
 
