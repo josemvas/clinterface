@@ -13,17 +13,17 @@ Import the bulletin module
 
    import bulletin
 
-Instantiate a default dialog instance
+Instantiate a default Dialogs instance
 
 .. code-block:: python
 
-   dialog = bulletin.Dialog()
+   dialogs = bulletin.Dialogs()
 
-or instantiate a customized dialog instance
+or instantiate a customized Dialogs instance
 
 .. code-block:: python
 
-   dialog = bulletin.Dialog(
+   dialogs = bulletin.Dialogs(
       shift = 1,
       indent = 3,
       align = 2,
@@ -37,7 +37,7 @@ Launch a dialog to select only one option
 
 .. code-block:: python
 
-   dialog.optone(
+   dialogs.optone(
        prompt='Choose the best day:',
        choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
        default='Saturday')
@@ -46,7 +46,7 @@ or launch a dialog to select one or more options
 
 .. code-block:: python
 
-   dialog.optany(
+   dialogs.optany(
        prompt='Choose the better days:',
        choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
        default=['Monday', 'Wednesday', 'Saturday'])

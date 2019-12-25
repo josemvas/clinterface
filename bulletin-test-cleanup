@@ -1,0 +1,4 @@
+#!/bin/sh
+find bulletin -name \*.pyc -type f -delete
+find bulletin -name \*.pyo -type f -delete
+find bulletin -name __pycache__ -type d -delete

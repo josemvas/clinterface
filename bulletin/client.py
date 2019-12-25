@@ -7,7 +7,7 @@ from . import keyhandler
 import readline
 import re
 
-class Dialog:
+class Dialogs:
     def __init__(
             self, 
             shift                     = 0,
