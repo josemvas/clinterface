@@ -6,5 +6,3 @@ This file includes a single public class `Dialog` which replaces the classes `Bu
 and `Check` found in the client.py module of the original `bullet` package. Other
 classes in the original module are not yet reimplemented.
 
-bullet-client-backup.py
-This file is a backup of the client.py file found in the original `bullet` package.
