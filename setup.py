@@ -1,34 +1,35 @@
-# Oldest Setuptools version supporting metadata in setup.cfg
-setuptools_requires = '30.3.0'
+# Minimum Setuptools version supporting configuration metadata in setup.cfg
+#min_stversion = '30.3'
+# Minimum Setuptools version supporting conditional python dependencies (PEP 508)
+min_stversion = '32.2'
 
 import sys
 import setuptools
-from distutils.version import StrictVersion
 from time import time
 
 # Record time before setup
 setup_time = time()
 
-# Setup package if Setuptools is new enough to read metadata from setup.cfg file
-if StrictVersion(setuptools.__version__) < StrictVersion(setuptools_requires):
-    sys.exit('SetupTools {0} or higher is required to setup this package.'.format(setuptools_requires))
-setuptools.setup()
+# Setup package if Setuptools version is high enough
+setuptools.setup(setup_requires=['setuptools>=' + min_stversion])
 
 import os
 from glob import glob
+#from shutil import rmtree
 
-# Clean generated build and dist-egg files
+# Delete only files generated after setup
 def rmtree(path):
+    def delete_newer(node, time, delete):
+        if os.path.getctime(node) > time:
+            try: delete(node)
+            except OSError as e: print(e)
     for root, dirs, files in os.walk(path, topdown=False):
         for f in files:
             delete_newer(os.path.join(root, f), setup_time, os.remove)
         for d in dirs:
             delete_newer(os.path.join(root, d), setup_time, os.rmdir)
-        delete_newer(path, setup_time, os.rmdir)
-def delete_newer(node, time, delete):
-    if os.path.getctime(node) > time:
-        try: delete(node)
-        except OSError: pass
+    delete_newer(path, setup_time, os.rmdir)
+
 rmtree('./build')
 for d in glob('./*.egg-info'):
     rmtree(d)
