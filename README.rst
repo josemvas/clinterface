@@ -47,7 +47,7 @@ or launch a dialog to select one or more options
 .. code-block:: python
 
    dialogs.optany(
-       prompt='Choose the better days:',
+       prompt='Choose three good days:',
        choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
        default=['Monday', 'Wednesday', 'Saturday'])
 
