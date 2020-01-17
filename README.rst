@@ -2,7 +2,7 @@
 bulletIn: Interactive Python prompts made simple
 ################################################
 
-`bulletIn <https://github.com/cronofugo/bulletin>`_ is a fork of `bullet. <https://github.com/Mckinsey666/bullet>`_
+`bulletIn <https://github.com/cronofugo/bulletin>`_ is a fork of `bullet. <https://github.com/Mckinsey666/bullet>`_ but only two dialog types are implemented at the moment.
  
 Quick start
 ***********
@@ -37,7 +37,7 @@ Launch a dialog to select only one option
 
 .. code-block:: python
 
-   dialogs.optone(
+   dialogs.chooseone(
        prompt='Choose the best day:',
        choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
        default='Saturday')
@@ -46,7 +46,7 @@ or launch a dialog to select one or more options
 
 .. code-block:: python
 
-   dialogs.optany(
+   dialogs.choosemany(
        prompt='Choose three good days:',
        choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
        default=['Monday', 'Wednesday', 'Saturday'])

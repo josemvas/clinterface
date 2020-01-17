@@ -42,7 +42,7 @@ class Dialogs:
         self.check = str(check) if check is not None else ' '
         self.nocheck = str(nocheck) if nocheck is not None else ' '
 
-    def optone(self, prompt='', choices=[], default=None):
+    def chooseone(self, prompt='', choices=[], default=None):
         if not choices:
             raise ValueError('Choices can not be empty!')
         if prompt:
@@ -53,9 +53,9 @@ class Dialogs:
         else:
             if not default in choices:
                 raise ValueError('`default` should be an element of `choices`!')
-        return OptOne(self, choices, default).launch()
+        return ChooseOne(self, choices, default).launch()
 
-    def optany(self, prompt='', choices=[], default=None):
+    def choosemany(self, prompt='', choices=[], default=None):
         if not choices:
             raise ValueError('Choices can not be empty!')
         if prompt:
@@ -68,11 +68,11 @@ class Dialogs:
                 raise TypeError('`default` should be a list!')
             if not all([i in choices for i in default]):
                 raise ValueError('`default` should be a subset of `choices`!')
-        return OptAny(self, choices, default).launch()
+        return ChooseMany(self, choices, default).launch()
 
 
 @keyhandler.init
-class OptOne:
+class ChooseOne:
     def __init__(self, itself, choices, default):
         self.align = itself.align
         self.shift = itself.shift
@@ -155,7 +155,7 @@ class OptOne:
 
 
 @keyhandler.init
-class OptAny:
+class ChooseMany:
     def __init__(self, itself, choices, default):
         self.align = itself.align
         self.shift = itself.shift
