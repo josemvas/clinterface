@@ -1,1 +1,2 @@
-from .client import Dialogs
+from .dialogs import Dialogs
+from .tkdialogs import TkDialogs
