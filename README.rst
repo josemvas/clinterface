@@ -2,7 +2,7 @@
 BulletIn: Interactive Python prompts made simple
 ################################################
 
-BulletIn is a stripped down fork of `bullet <https://github.com/Mckinsey666/bullet>`_ with interactive dialog types to choose single and multiple elements from a list.
+BulletIn is a stripped down fork of `bullet <https://github.com/Mckinsey666/bullet>`_ with just two interactive dialog types for choosing single/multiple elements from a list.
  
 Quick start
 ***********
