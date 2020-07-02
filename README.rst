@@ -1,6 +1,6 @@
-##################################################################
-BulletIn: Interactive Python prompt to select items from a list
-##################################################################
+######################################################################
+BulletIn: Simple interactive Python prompt to select list items
+######################################################################
 
 BulletIn is a stripped down fork of `bullet <https://github.com/Mckinsey666/bullet>`_.
  
