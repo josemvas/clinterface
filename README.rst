@@ -2,7 +2,7 @@
 BulletIn: Interactive Python prompts made simple
 ################################################
 
-`BulletIn`_ is a simplified fork of `bullet. <https://github.com/Mckinsey666/bullet>`_. Only two dialog types are implemented at the moment.
+BulletIn is a simplified fork of `bullet. <https://github.com/Mckinsey666/bullet>`_. Only two dialog types are implemented at the moment.
  
 Quick start
 ***********
