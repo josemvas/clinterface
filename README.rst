@@ -1,29 +1,28 @@
-##########################################
-BulletIn: Simple interactive Python prompt
-##########################################
+Runtime Python utilities
+#########################
 
-BulletIn is an interactive Python prompt to select single or multiple elements from a list. It is a stripped down fork of `bullet <https://github.com/Mckinsey666/bullet>`_.
+RunUtils is a collection of Python utilities to display messages, launch interactive prompts and handle files. It is partly based on `bullet <https://github.com/Mckinsey666/bullet>`_.
  
 Quick start
 ***********
 
-Import the bulletin module
+Import the runutils module
 
 .. code-block:: python
 
-   import bulletin
+   import runutils
 
-Instantiate a default Dialogs instance
-
-.. code-block:: python
-
-   dialogs = bulletin.Dialogs()
-
-or instantiate a customized Dialogs instance
+Create a default Choose instance
 
 .. code-block:: python
 
-   dialogs = bulletin.Dialogs(
+   choose = runutils.Choose()
+
+or create a customized Choose instance
+
+.. code-block:: python
+
+   choose = bulletin.Choose(
       shift = 1,
       indent = 3,
       align = 2,
@@ -37,7 +36,7 @@ Launch a dialog to select only one option
 
 .. code-block:: python
 
-   dialogs.chooseone(
+   choose.one(
        prompt='Choose the best day:',
        choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
        default='Saturday')
@@ -46,7 +45,7 @@ or launch a dialog to select one or more options
 
 .. code-block:: python
 
-   dialogs.choosemany(
+   choose.some(
        prompt='Choose three good days:',
        choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
        default=['Monday', 'Wednesday', 'Saturday'])

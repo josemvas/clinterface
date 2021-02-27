@@ -9,7 +9,7 @@ import re
 
     
 @keyhandler.init
-class Dialogs:
+class Choose:
     def __init__(
             self, 
             shift                     = 0,
@@ -128,7 +128,7 @@ class Dialogs:
             self.printr(i)
             utils.forceWrite('\n')
             
-    def chooseone(self, prompt='', choices=[], default=None):
+    def one(self, prompt='', choices=[], default=None):
         if not choices:
             raise ValueError('Choices can not be empty!')
         if prompt:
@@ -138,7 +138,7 @@ class Dialogs:
             default = choices[0]
         else:
             if not default in choices:
-                raise ValueError('`default` should be an element of `choices`!')
+                raise ValueError('<default> should be an element of <choices>!')
         self.choices = choices
         self.printr = self.printrbullet
         self.toggle = self.togglebullet
@@ -153,7 +153,7 @@ class Dialogs:
                 if ret is not None:
                     return ret
 
-    def choosemany(self, prompt='', choices=[], default=None):
+    def some(self, prompt='', choices=[], default=None):
         if not choices:
             raise ValueError('Choices can not be empty!')
         if prompt:
@@ -163,9 +163,9 @@ class Dialogs:
             default = []
         else:
             if not type(default).__name__ == 'list':
-                raise TypeError('`default` should be a list!')
+                raise TypeError('<default> should be a list!')
             if not all([i in choices for i in default]):
-                raise ValueError('`default` should be a subset of `choices`!')
+                raise ValueError('<default> should be a subset of <choices>!')
         self.choices = choices
         self.printr = self.printrcheck
         self.toggle = self.togglecheck
