@@ -32,6 +32,15 @@ or create a customized Choose instance
       check = 'X',
       nocheck = 'O')
 
+Launch a dialog to select one or more options
+
+.. code-block:: python
+
+   choose.some(
+       prompt='Choose good days:',
+       choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+       default=['Friday', 'Saturday', 'Sunday'])
+
 Launch a dialog to select only one option
 
 .. code-block:: python
@@ -39,14 +48,5 @@ Launch a dialog to select only one option
    choose.one(
        prompt='Choose the best day:',
        choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-       default='Saturday')
-
-or launch a dialog to select one or more options
-
-.. code-block:: python
-
-   choose.some(
-       prompt='Choose three good days:',
-       choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-       default=['Monday', 'Wednesday', 'Saturday'])
+       default='Friday')
 
