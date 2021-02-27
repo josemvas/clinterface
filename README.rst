@@ -22,7 +22,7 @@ or create a customized Choose instance
 
 .. code-block:: python
 
-   choose = bulletin.Choose(
+   choose = runutils.Choose(
       shift = 1,
       indent = 3,
       align = 2,
@@ -30,7 +30,8 @@ or create a customized Choose instance
       pad_left = 1,
       pad_right = 1,
       check = 'X',
-      nocheck = 'O')
+      nocheck = 'O'
+   )
 
 Launch a dialog to select one or more options
 
@@ -39,7 +40,8 @@ Launch a dialog to select one or more options
    choose.some(
        prompt='Choose good days:',
        choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-       default=['Friday', 'Saturday', 'Sunday'])
+       default=['Friday', 'Saturday', 'Sunday']
+   )
 
 Launch a dialog to select only one option
 
@@ -48,5 +50,6 @@ Launch a dialog to select only one option
    choose.one(
        prompt='Choose the best day:',
        choices=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-       default='Friday')
+       default='Friday'
+   )
 
