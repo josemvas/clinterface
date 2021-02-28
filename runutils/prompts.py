@@ -151,24 +151,24 @@ class Choose:
             raise ValueError('<choices> can not be empty')
         self.choices = choices
 
-    def set_default(self, *default):
-        if not default:
-            raise ValueError('<default> can not be empty')
-        self.default = default
+    def set_defaults(self, *defaults):
+        if not defaults:
+            raise ValueError('<defaults> can not be empty')
+        self.defaults = defaults
 
     def one(self):
         if self.legend is None:
             raise ValueError('<legend> must be defined')
         if self.choices is None:
             raise ValueError('<choices> must be defined')
-        if self.default is None:
+        if self.defaults is None:
             default = self.choices[0]
-        elif len(self.default) > 1:
+        elif len(self.defaults) > 1:
             raise ValueError('There must be only one <default>')
-        elif self.default[0] in self.choices:
-            default = self.default[0]
+        elif self.defaults[0] in self.choices:
+            default = self.defaults[0]
         else:
-            raise ValueError('<default> should be an element of <choices>')
+            raise ValueError('<default> must be an element of <choices>')
         self.print = self.printbullet
         self.toggle = self.togglebullet
         self.accept = self.acceptbullet
@@ -181,17 +181,17 @@ class Choose:
             raise ValueError('<legend> must be defined')
         if self.choices is None:
             raise ValueError('<choices> must be defined')
-        if self.default is None:
-            default = []
-        elif all([i in self.choices for i in self.default]):
-            default = self.default
+        if self.defaults is None:
+            defaults = []
+        elif all([i in self.choices for i in self.defaults]):
+            defaults = self.defaults
         else:
-            raise ValueError('<default> must be a subset of <choices>')
+            raise ValueError('<defaults> must be a subset of <choices>')
         self.print = self.printcheck
         self.toggle = self.togglecheck
         self.accept = self.acceptcheck
         self.max_width = len(max(self.choices, key = len)) + self.pad_right
-        self.checked = [True if i in default else False for i in self.choices]
+        self.checked = [True if i in defaults else False for i in self.choices]
         self.pos = 0
         return self.render()
 

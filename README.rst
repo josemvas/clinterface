@@ -39,7 +39,7 @@ Set legend, choices and defaults
 
    prompt.set_legend('Choose the best day of the week:')
    prompt.set_choices('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
-   prompt.set_default('Friday')
+   prompt.set_defaults('Friday')
 
 Prompt for only one option
 
