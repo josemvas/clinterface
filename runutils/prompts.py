@@ -26,20 +26,8 @@ class Choose:
             word_on_switch            = colors.REVERSE,
             background_color          = colors.background['default'],
             background_on_switch      = colors.REVERSE,
-            prompt                    = None,
-            default                   = None,
-            choices                   = [],
         ):
 
-        if not isinstance(choices, (list, tuple)):
-            raise ValueError('<choices> must be a list or tuple')
-
-        if not choices:
-            raise ValueError('<choices> can not be empty')
-
-        self.prompt = prompt
-        self.default = default
-        self.choices = choices
         self.word_color = word_color
         self.word_on_switch = word_on_switch
         self.background_color = background_color
@@ -138,7 +126,21 @@ class Choose:
         for i in range(len(self.choices)):
             self.print(i)
             utils.forceWrite('\n')
-            
+
+    def update(
+            self,
+            prompt                    = None,
+            default                   = None,
+            choices                   = [],
+        ):
+        if not isinstance(choices, (list, tuple)):
+            raise ValueError('<choices> must be a list or tuple')
+        if not choices:
+            raise ValueError('<choices> can not be empty')
+        self.prompt = prompt
+        self.default = default
+        self.choices = choices
+
     def one(self):
         if self.prompt:
             utils.forceWrite(' ' * self.indent + self.prompt + '\n')
