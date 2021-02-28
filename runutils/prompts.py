@@ -123,28 +123,38 @@ class Choose:
         raise KeyboardInterrupt
 
     def render(self):
+        utils.forceWrite(' ' * self.indent + self.prompt + '\n')
+        utils.forceWrite('\n' * self.shift)
         for i in range(len(self.choices)):
             self.print(i)
             utils.forceWrite('\n')
+        utils.moveCursorUp(len(self.choices) - self.pos)
 
     def update(
             self,
             prompt                    = None,
+            choices                   = None
             default                   = None,
-            choices                   = [],
         ):
-        if not isinstance(choices, (list, tuple)):
+        if isinstance(prompt, str):
+            if not prompt:
+                raise ValueError('<prompt> can not be empty')
+        elif prompt is None:
+            raise ValueError('<prompt> must be defined')
+        else:
+            raise ValueError('<prompt> must be an string')
+        if isinstance(choices, (list, tuple)):
+            if not choices:
+                raise ValueError('<choices> can not be empty')
+        elif choices is None:
+            raise ValueError('<choices> must be defined')
+        else:
             raise ValueError('<choices> must be a list or tuple')
-        if not choices:
-            raise ValueError('<choices> can not be empty')
         self.prompt = prompt
-        self.default = default
         self.choices = choices
+        self.default = default
 
     def one(self):
-        if self.prompt:
-            utils.forceWrite(' ' * self.indent + self.prompt + '\n')
-            utils.forceWrite('\n' * self.shift)
         if self.default is None:
             self.default = self.choices[0]
         elif not self.default in self.choices:
@@ -155,7 +165,6 @@ class Choose:
         self.max_width = len(max(self.choices, key = len)) + self.pad_right
         self.pos = self.choices.index(self.default)
         self.render()
-        utils.moveCursorUp(len(self.choices) - self.pos)
         with cursor.hide():
             while True:
                 ret = self.handle_input()
@@ -163,9 +172,6 @@ class Choose:
                     return ret
 
     def some(self):
-        if self.prompt:
-            utils.forceWrite(' ' * self.indent + self.prompt + '\n')
-            utils.forceWrite('\n' * self.shift)
         if self.default is None:
             self.default = []
         elif self.default isinstance(self.default, (list, tuple)):
@@ -180,7 +186,6 @@ class Choose:
         self.checked = [True if i in self.default else False for i in self.choices]
         self.pos = 0
         self.render()
-        utils.moveCursorUp(len(self.choices))
         with cursor.hide():
             while True:
                 ret = self.handle_input()
