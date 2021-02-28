@@ -44,7 +44,7 @@ class Choose:
         self.radiobullet = ' ' if radiobullet is None else radiobullet
         self.checkbullet = ' ' if checkbullet is None else checkbullet
         self.uncheckbullet = ' ' if uncheckbullet is None else uncheckbullet
-        self.legend = None
+        self.label = None
         self.choices = None
         self.default = None
 
@@ -128,7 +128,7 @@ class Choose:
         raise KeyboardInterrupt
 
     def render(self):
-        utils.forceWrite(' ' * self.indent + self.legend + '\n')
+        utils.forceWrite(' ' * self.indent + self.label + '\n')
         utils.forceWrite('\n' * self.shift)
         for i in range(len(self.choices)):
             self.print(i)
@@ -140,13 +140,13 @@ class Choose:
                 if ret is not None:
                     return ret
 
-    def set_legend(self, legend):
-        if isinstance(legend, str):
-            if not legend:
-                raise ValueError('<legend> can not be empty')
+    def set_label(self, label):
+        if isinstance(label, str):
+            if not label:
+                raise ValueError('<label> can not be empty')
         else:
-            raise ValueError('<legend> must be a string')
-        self.legend = legend
+            raise ValueError('<label> must be a string')
+        self.label = label
 
     def set_choices(self, *choices):
         if not choices:
@@ -159,8 +159,8 @@ class Choose:
         self.defaults = defaults
 
     def one(self):
-        if self.legend is None:
-            raise ValueError('<legend> must be defined')
+        if self.label is None:
+            raise ValueError('<label> must be defined')
         if self.choices is None:
             raise ValueError('<choices> must be defined')
         if self.defaults is None:
@@ -179,8 +179,8 @@ class Choose:
         return self.render()
 
     def some(self):
-        if self.legend is None:
-            raise ValueError('<legend> must be defined')
+        if self.label is None:
+            raise ValueError('<label> must be defined')
         if self.choices is None:
             raise ValueError('<choices> must be defined')
         if self.defaults is None:

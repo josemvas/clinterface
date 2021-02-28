@@ -28,11 +28,11 @@ or create a customized Choose instance
       uncheckbullet = '-'
    )
 
-Set legend, choices and defaults
+Set label, choices and defaults
 
 .. code-block:: python
 
-   prompt.set_legend('Choose the best day of the week:')
+   prompt.set_label('Choose the best day of the week:')
    prompt.set_choices('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
    prompt.set_defaults('Friday')
 
@@ -42,9 +42,9 @@ Prompt for only one option
 
    prompt.one()
 
-Update legend and prompt for one or more options
+Update label and prompt for one or more options
 
 .. code-block:: python
 
-   prompt.set_legend('Choose every good day of the week:')
+   prompt.set_label('Choose good days of the week:')
    prompt.some()
