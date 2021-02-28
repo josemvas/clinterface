@@ -26,15 +26,26 @@ class Choose:
             word_on_switch            = colors.REVERSE,
             background_color          = colors.background['default'],
             background_on_switch      = colors.REVERSE,
+            prompt                    = None,
+            default                   = None,
+            choices                   = [],
         ):
 
+        if not isinstance(choices, (list, tuple)):
+            raise ValueError('<choices> must be a list or tuple')
+
+        if not choices:
+            raise ValueError('<choices> can not be empty')
+
+        self.prompt = prompt
+        self.default = default
+        self.choices = choices
         self.word_color = word_color
         self.word_on_switch = word_on_switch
         self.background_color = background_color
         self.background_on_switch = background_on_switch
         self.check_color = check_color
         self.check_on_switch = check_on_switch
-
         self.align = max(int(align), 0)
         self.shift = max(int(shift), 0)
         self.indent = max(int(indent), 0)
@@ -44,7 +55,7 @@ class Choose:
         self.check = str(check) if check is not None else ' '
         self.nocheck = str(nocheck) if nocheck is not None else ' '
 
-    def printrbullet(self, idx):
+    def printbullet(self, idx):
         utils.forceWrite(' ' * (self.indent + self.align))
         back_color = self.background_on_switch if idx == self.pos else self.background_color
         word_color = self.word_on_switch if idx == self.pos else self.word_color
@@ -64,7 +75,7 @@ class Choose:
     def acceptbullet(self):
         return self.choices[self.pos]
     
-    def printrcheck(self, idx):
+    def printcheck(self, idx):
         utils.forceWrite(' ' * (self.indent + self.align))
         back_color = self.background_on_switch if idx == self.pos else self.background_color
         word_color = self.word_on_switch if idx == self.pos else self.word_color
@@ -80,7 +91,7 @@ class Choose:
     
     def togglecheck(self):
         self.checked[self.pos] = not self.checked[self.pos]
-        self.printrcheck(self.pos)
+        self.printcheck(self.pos)
     
     def acceptcheck(self):
         return [self.choices[i] for i in range(len(self.choices)) if self.checked[i]]
@@ -97,9 +108,9 @@ class Choose:
             utils.clearLine()
             old_pos = self.pos
             self.pos -= 1
-            self.printr(old_pos)
+            self.print(old_pos)
             utils.moveCursorUp(1)
-            self.printr(self.pos)
+            self.print(self.pos)
 
     @keyhandler.register(ARROW_DOWN_KEY)
     def moveDown(self):
@@ -109,9 +120,9 @@ class Choose:
             utils.clearLine()
             old_pos = self.pos
             self.pos += 1
-            self.printr(old_pos)
+            self.print(old_pos)
             utils.moveCursorDown(1)
-            self.printr(self.pos)
+            self.print(self.pos)
 
     @keyhandler.register(NEWLINE_KEY)
     def accept(self):
@@ -125,26 +136,22 @@ class Choose:
 
     def render(self):
         for i in range(len(self.choices)):
-            self.printr(i)
+            self.print(i)
             utils.forceWrite('\n')
             
-    def one(self, prompt='', choices=[], default=None):
-        if not choices:
-            raise ValueError('Choices can not be empty!')
-        if prompt:
-            utils.forceWrite(' ' * self.indent + prompt + '\n')
+    def one(self):
+        if self.prompt:
+            utils.forceWrite(' ' * self.indent + self.prompt + '\n')
             utils.forceWrite('\n' * self.shift)
-        if default is None:
-            default = choices[0]
-        else:
-            if not default in choices:
-                raise ValueError('<default> should be an element of <choices>!')
-        self.choices = choices
-        self.printr = self.printrbullet
+        if self.default is None:
+            self.default = self.choices[0]
+        elif not self.default in self.choices:
+            raise ValueError('<default> should be an element of <choices>')
+        self.print = self.printbullet
         self.toggle = self.togglebullet
         self.accept = self.acceptbullet
-        self.max_width = len(max(choices, key = len)) + self.pad_right
-        self.pos = choices.index(default)
+        self.max_width = len(max(self.choices, key = len)) + self.pad_right
+        self.pos = self.choices.index(self.default)
         self.render()
         utils.moveCursorUp(len(self.choices) - self.pos)
         with cursor.hide():
@@ -153,25 +160,22 @@ class Choose:
                 if ret is not None:
                     return ret
 
-    def some(self, prompt='', choices=[], default=None):
-        if not choices:
-            raise ValueError('Choices can not be empty!')
-        if prompt:
-            utils.forceWrite(' ' * self.indent + prompt + '\n')
+    def some(self):
+        if self.prompt:
+            utils.forceWrite(' ' * self.indent + self.prompt + '\n')
             utils.forceWrite('\n' * self.shift)
-        if default is None:
-            default = []
+        if self.default is None:
+            self.default = []
+        elif self.default isinstance(self.default, (list, tuple)):
+            if not all([i in self.choices for i in self.default]):
+                raise ValueError('<default> must be a subset of <choices>')
         else:
-            if not type(default).__name__ == 'list':
-                raise TypeError('<default> should be a list!')
-            if not all([i in choices for i in default]):
-                raise ValueError('<default> should be a subset of <choices>!')
-        self.choices = choices
-        self.printr = self.printrcheck
+            raise ValueError('<default> must be a list or tuple')
+        self.print = self.printcheck
         self.toggle = self.togglecheck
         self.accept = self.acceptcheck
-        self.max_width = len(max(choices, key = len)) + self.pad_right
-        self.checked = [ True if i in default else False for i in choices ]
+        self.max_width = len(max(self.choices, key = len)) + self.pad_right
+        self.checked = [True if i in self.default else False for i in self.choices]
         self.pos = 0
         self.render()
         utils.moveCursorUp(len(self.choices))
@@ -180,5 +184,4 @@ class Choose:
                 ret = self.handle_input()
                 if ret is not None:
                     return ret
-
 

@@ -1,1 +1,1 @@
-from .client import Choose
+from .prompts import Choose
