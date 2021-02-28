@@ -18,10 +18,11 @@ class Choose:
             margin                    = 1,
             pad_left                  = 1,
             pad_right                 = 1,
-            check                     = '>', 
-            nocheck                   = None, 
-            check_color               = colors.foreground['default'],
-            check_on_switch           = colors.REVERSE,
+            radiobullet               = '>',
+            checkbullet               = 'X', 
+            uncheckbullet             = None, 
+            bullet_color              = colors.foreground['default'],
+            bullet_on_switch          = colors.REVERSE,
             word_color                = colors.foreground['default'],
             word_on_switch            = colors.REVERSE,
             background_color          = colors.background['default'],
@@ -32,50 +33,51 @@ class Choose:
         self.word_on_switch = word_on_switch
         self.background_color = background_color
         self.background_on_switch = background_on_switch
-        self.check_color = check_color
-        self.check_on_switch = check_on_switch
+        self.bullet_color = bullet_color
+        self.bullet_on_switch = bullet_on_switch
         self.align = max(int(align), 0)
         self.shift = max(int(shift), 0)
         self.indent = max(int(indent), 0)
         self.margin = max(int(margin), 0)
         self.pad_left = max(int(pad_left), 0)
         self.pad_right = max(int(pad_right), 0)
-        self.check = str(check) if check is not None else ' '
-        self.nocheck = str(nocheck) if nocheck is not None else ' '
+        self.radiobullet = ' ' if radiobullet is None else radiobullet
+        self.checkbullet = ' ' if checkbullet is None else checkbullet
+        self.uncheckbullet = ' ' if uncheckbullet is None else uncheckbullet
         self.legend = None
         self.choices = None
         self.default = None
 
-    def printbullet(self, idx):
+    def printradio(self, idx):
         utils.forceWrite(' ' * (self.indent + self.align))
         back_color = self.background_on_switch if idx == self.pos else self.background_color
         word_color = self.word_on_switch if idx == self.pos else self.word_color
-        check_color = self.check_on_switch if idx == self.pos else self.check_color
+        bullet_color = self.bullet_on_switch if idx == self.pos else self.bullet_color
         utils.cprint(' ' * self.pad_left, on = back_color, end = '')
         if idx == self.pos:
-            utils.cprint('{}'.format(self.check) + ' ' * self.margin, check_color, back_color, end = '')
+            utils.cprint(self.radiobullet + ' ' * self.margin, bullet_color, back_color, end = '')
         else:
-            utils.cprint('{}'.format(self.nocheck) + ' ' * self.margin, check_color, back_color, end = '')
+            utils.cprint(' ' * (len(self.radiobullet) + self.margin), bullet_color, back_color, end = '')
         utils.cprint(self.choices[idx], word_color, back_color, end = '')
         utils.cprint(' ' * (self.max_width - len(self.choices[idx])), on = back_color, end = '')
         utils.moveCursorHead()
     
-    def togglebullet(self):
+    def toggleradio(self):
         pass
     
-    def acceptbullet(self):
+    def acceptradio(self):
         return self.choices[self.pos]
     
     def printcheck(self, idx):
         utils.forceWrite(' ' * (self.indent + self.align))
         back_color = self.background_on_switch if idx == self.pos else self.background_color
         word_color = self.word_on_switch if idx == self.pos else self.word_color
-        check_color = self.check_on_switch if idx == self.pos else self.check_color
+        bullet_color = self.bullet_on_switch if idx == self.pos else self.bullet_color
         utils.cprint(' ' * self.pad_left, on = back_color, end = '')
         if self.checked[idx]:
-            utils.cprint('{}'.format(self.check) + ' ' * self.margin, check_color, back_color, end = '')
+            utils.cprint(self.checkbullet + ' ' * self.margin, bullet_color, back_color, end = '')
         else:
-            utils.cprint('{}'.format(self.nocheck) + ' ' * self.margin, check_color, back_color, end = '')
+            utils.cprint(self.uncheckbullet + ' ' * self.margin, bullet_color, back_color, end = '')
         utils.cprint(self.choices[idx], word_color, back_color, end = '')
         utils.cprint(' ' * (self.max_width - len(self.choices[idx])), on = back_color, end = '')
         utils.moveCursorHead()
@@ -169,9 +171,9 @@ class Choose:
             default = self.defaults[0]
         else:
             raise ValueError('<default> must be an element of <choices>')
-        self.print = self.printbullet
-        self.toggle = self.togglebullet
-        self.accept = self.acceptbullet
+        self.print = self.printradio
+        self.toggle = self.toggleradio
+        self.accept = self.acceptradio
         self.max_width = len(max(self.choices, key = len)) + self.pad_right
         self.pos = self.choices.index(default)
         return self.render()
