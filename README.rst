@@ -16,13 +16,13 @@ Create a default Choose instance
 
 .. code-block:: python
 
-   choose = runutils.Choose()
+   prompt = runutils.Choose()
 
 or create a customized Choose instance
 
 .. code-block:: python
 
-   choose = runutils.Choose(
+   prompt = runutils.Choose(
       shift = 1,
       indent = 3,
       align = 2,
@@ -33,23 +33,23 @@ or create a customized Choose instance
       nocheck = 'O'
    )
 
-Prompt to choose just one option
+Set legend, choices and defaults
 
 .. code-block:: python
 
-   choose.update(
-       prompt = 'Choose the best day:',
-       choices = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-   )
+   prompt.set_legend('Choose the best day of the week:')
+   prompt.set_choices('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
+   prompt.set_default('Friday')
 
-   choose.one()
-
-Update and prompt to choose one or more options
+Prompt for only one option
 
 .. code-block:: python
 
-   choose.update(
-       prompt = 'Choose all the good days:',
-   )
+   prompt.one()
 
-   choose.some()
+Update legend and prompt for one or more options
+
+.. code-block:: python
+
+   prompt.set_legend('Choose every good day of the week:')
+   prompt.some()

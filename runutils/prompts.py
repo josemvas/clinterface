@@ -42,6 +42,9 @@ class Choose:
         self.pad_right = max(int(pad_right), 0)
         self.check = str(check) if check is not None else ' '
         self.nocheck = str(nocheck) if nocheck is not None else ' '
+        self.legend = None
+        self.choices = None
+        self.default = None
 
     def printbullet(self, idx):
         utils.forceWrite(' ' * (self.indent + self.align))
@@ -123,72 +126,72 @@ class Choose:
         raise KeyboardInterrupt
 
     def render(self):
-        utils.forceWrite(' ' * self.indent + self.prompt + '\n')
+        utils.forceWrite(' ' * self.indent + self.legend + '\n')
         utils.forceWrite('\n' * self.shift)
         for i in range(len(self.choices)):
             self.print(i)
             utils.forceWrite('\n')
         utils.moveCursorUp(len(self.choices) - self.pos)
+        with cursor.hide():
+            while True:
+                ret = self.handle_input()
+                if ret is not None:
+                    return ret
 
-    def update(
-            self,
-            prompt                    = None,
-            choices                   = None
-            default                   = None,
-        ):
-        if isinstance(prompt, str):
-            if not prompt:
-                raise ValueError('<prompt> can not be empty')
-        elif prompt is None:
-            raise ValueError('<prompt> must be defined')
+    def set_legend(self, legend):
+        if isinstance(legend, str):
+            if not legend:
+                raise ValueError('<legend> can not be empty')
         else:
-            raise ValueError('<prompt> must be an string')
-        if isinstance(choices, (list, tuple)):
-            if not choices:
-                raise ValueError('<choices> can not be empty')
-        elif choices is None:
-            raise ValueError('<choices> must be defined')
-        else:
-            raise ValueError('<choices> must be a list or tuple')
-        self.prompt = prompt
+            raise ValueError('<legend> must be a string')
+        self.legend = legend
+
+    def set_choices(self, *choices):
+        if not choices:
+            raise ValueError('<choices> can not be empty')
         self.choices = choices
+
+    def set_default(self, *default):
+        if not default:
+            raise ValueError('<default> can not be empty')
         self.default = default
 
     def one(self):
+        if self.legend is None:
+            raise ValueError('<legend> must be defined')
+        if self.choices is None:
+            raise ValueError('<choices> must be defined')
         if self.default is None:
-            self.default = self.choices[0]
-        elif not self.default in self.choices:
+            default = self.choices[0]
+        elif len(self.default) > 1:
+            raise ValueError('There must be only one <default>')
+        elif self.default[0] in self.choices:
+            default = self.default[0]
+        else:
             raise ValueError('<default> should be an element of <choices>')
         self.print = self.printbullet
         self.toggle = self.togglebullet
         self.accept = self.acceptbullet
         self.max_width = len(max(self.choices, key = len)) + self.pad_right
-        self.pos = self.choices.index(self.default)
-        self.render()
-        with cursor.hide():
-            while True:
-                ret = self.handle_input()
-                if ret is not None:
-                    return ret
+        self.pos = self.choices.index(default)
+        return self.render()
 
     def some(self):
+        if self.legend is None:
+            raise ValueError('<legend> must be defined')
+        if self.choices is None:
+            raise ValueError('<choices> must be defined')
         if self.default is None:
-            self.default = []
-        elif self.default isinstance(self.default, (list, tuple)):
-            if not all([i in self.choices for i in self.default]):
-                raise ValueError('<default> must be a subset of <choices>')
+            default = []
+        elif all([i in self.choices for i in self.default]):
+            default = self.default
         else:
-            raise ValueError('<default> must be a list or tuple')
+            raise ValueError('<default> must be a subset of <choices>')
         self.print = self.printcheck
         self.toggle = self.togglecheck
         self.accept = self.acceptcheck
         self.max_width = len(max(self.choices, key = len)) + self.pad_right
-        self.checked = [True if i in self.default else False for i in self.choices]
+        self.checked = [True if i in default else False for i in self.choices]
         self.pos = 0
-        self.render()
-        with cursor.hide():
-            while True:
-                ret = self.handle_input()
-                if ret is not None:
-                    return ret
+        return self.render()
 
