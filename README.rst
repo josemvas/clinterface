@@ -27,7 +27,6 @@ or create a customized Choose instance
    prompt = runutils.Choose(
       radiobullet = '*',
       checkbullet = '+',
-      uncheckbullet = '-'
    )
 
 Set label, choices and defaults
