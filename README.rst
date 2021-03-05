@@ -23,9 +23,14 @@ or create a customized Choose instance
 .. code-block:: python
 
    prompt = runutils.Choose(
+      shift = 1,
+      indent = 3,
+      align = 2,
+      margin = 1,
+      pad_left = 1,
+      pad_right = 1,
       radiobullet = '*',
       checkbullet = '+',
-      uncheckbullet = '-'
    )
 
 Set label, choices and defaults

@@ -19,8 +19,7 @@ class Choose:
             pad_left                  = 1,
             pad_right                 = 1,
             radiobullet               = '>',
-            checkbullet               = 'X', 
-            uncheckbullet             = None, 
+            checkbullet               = 'X',
             bullet_color              = colors.foreground['default'],
             bullet_on_switch          = colors.REVERSE,
             word_color                = colors.foreground['default'],
@@ -43,7 +42,6 @@ class Choose:
         self.pad_right = max(int(pad_right), 0)
         self.radiobullet = ' ' if radiobullet is None else radiobullet
         self.checkbullet = ' ' if checkbullet is None else checkbullet
-        self.uncheckbullet = ' ' if uncheckbullet is None else uncheckbullet
         self.label = None
         self.choices = None
         self.default = None
@@ -77,7 +75,7 @@ class Choose:
         if self.checked[idx]:
             utils.cprint(self.checkbullet + ' ' * self.margin, bullet_color, back_color, end = '')
         else:
-            utils.cprint(self.uncheckbullet + ' ' * self.margin, bullet_color, back_color, end = '')
+            utils.cprint(' ' * (len(self.checkbullet) + self.margin), bullet_color, back_color, end = '')
         utils.cprint(self.choices[idx], word_color, back_color, end = '')
         utils.cprint(' ' * (self.max_width - len(self.choices[idx])), on = back_color, end = '')
         utils.moveCursorHead()
