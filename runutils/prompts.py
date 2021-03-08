@@ -1,15 +1,16 @@
+import os
 import sys
+import readline
+from glob import glob
 from .charDef import *
 from . import colors
 from . import utils
 from . import cursor
 from . import keyhandler
-import readline
-import re
-
+from . import messages
     
 @keyhandler.init
-class Choose:
+class Chooser:
     def __init__(
             self, 
             shift                     = 0,
@@ -27,7 +28,6 @@ class Choose:
             background_color          = colors.background['default'],
             background_on_switch      = colors.REVERSE,
         ):
-
         self.word_color = word_color
         self.word_on_switch = word_on_switch
         self.background_color = background_color
@@ -44,8 +44,7 @@ class Choose:
         self.checkbullet = ' ' if checkbullet is None else checkbullet
         self.label = None
         self.choices = None
-        self.default = None
-
+        self.defaults = None
     def printradio(self, idx):
         utils.forceWrite(' ' * (self.indent + self.align))
         back_color = self.background_on_switch if idx == self.pos else self.background_color
@@ -59,13 +58,10 @@ class Choose:
         utils.cprint(self.choices[idx], word_color, back_color, end = '')
         utils.cprint(' ' * (self.max_width - len(self.choices[idx])), on = back_color, end = '')
         utils.moveCursorHead()
-    
     def toggleradio(self):
         pass
-    
     def acceptradio(self):
         return self.choices[self.pos]
-    
     def printcheck(self, idx):
         utils.forceWrite(' ' * (self.indent + self.align))
         back_color = self.background_on_switch if idx == self.pos else self.background_color
@@ -79,18 +75,14 @@ class Choose:
         utils.cprint(self.choices[idx], word_color, back_color, end = '')
         utils.cprint(' ' * (self.max_width - len(self.choices[idx])), on = back_color, end = '')
         utils.moveCursorHead()
-    
     def togglecheck(self):
         self.checked[self.pos] = not self.checked[self.pos]
         self.printcheck(self.pos)
-    
     def acceptcheck(self):
         return [self.choices[i] for i in range(len(self.choices)) if self.checked[i]]
-    
     @keyhandler.register(SPACE_CHAR)
     def toggle(self):
         self.toggle()
-
     @keyhandler.register(ARROW_UP_KEY)
     def moveUp(self):
         if self.pos - 1 < 0:
@@ -102,7 +94,6 @@ class Choose:
             self.print(old_pos)
             utils.moveCursorUp(1)
             self.print(self.pos)
-
     @keyhandler.register(ARROW_DOWN_KEY)
     def moveDown(self):
         if self.pos + 1 >= len(self.choices):
@@ -114,17 +105,14 @@ class Choose:
             self.print(old_pos)
             utils.moveCursorDown(1)
             self.print(self.pos)
-
     @keyhandler.register(NEWLINE_KEY)
     def accept(self):
         utils.moveCursorDown(len(self.choices) - self.pos)
         return self.accept()
-
     @keyhandler.register(INTERRUPT_KEY)
     def interrupt(self):
         utils.moveCursorDown(len(self.choices) - self.pos)
         raise KeyboardInterrupt
-
     def render(self):
         utils.forceWrite(' ' * self.indent + self.label + '\n')
         utils.forceWrite('\n' * self.shift)
@@ -137,7 +125,6 @@ class Choose:
                 ret = self.handle_input()
                 if ret is not None:
                     return ret
-
     def set_label(self, label):
         if isinstance(label, str):
             if not label:
@@ -145,17 +132,14 @@ class Choose:
         else:
             raise ValueError('<label> must be a string')
         self.label = label
-
     def set_choices(self, *choices):
         if not choices:
             raise ValueError('<choices> can not be empty')
         self.choices = choices
-
     def set_defaults(self, *defaults):
         if not defaults:
             raise ValueError('<defaults> can not be empty')
         self.defaults = defaults
-
     def one(self):
         if self.label is None:
             raise ValueError('<label> must be defined')
@@ -175,7 +159,6 @@ class Choose:
         self.max_width = len(max(self.choices, key = len)) + self.pad_right
         self.pos = self.choices.index(default)
         return self.render()
-
     def some(self):
         if self.label is None:
             raise ValueError('<label> must be defined')
@@ -194,4 +177,90 @@ class Choose:
         self.checked = [True if i in defaults else False for i in self.choices]
         self.pos = 0
         return self.render()
+
+class Completer(object):
+    def __init__(self, delims=' \t\n'):
+        readline.set_completer_delims(delims)
+        readline.parse_and_bind('tab: complete')
+        self.label = None
+        self.choices = None
+        self.defaults = None
+    def set_label(self, label):
+        if isinstance(label, str):
+            if not label:
+                raise ValueError('<label> can not be empty')
+        else:
+            raise ValueError('<label> must be a string')
+        self.label = label
+    def set_choices(self, *choices):
+        if not choices:
+            raise ValueError('<choices> can not be empty')
+        self.choices = choices
+    def set_yesno(self, yes, no, default=None):
+        if not yes:
+            raise ValueError('<yes> must be a non empty string')
+        if not no:
+            raise ValueError('<no> must be a non empty string')
+        self.yes = yes
+        self.no = no
+        self.choices = (yes, no)
+        self.default = default
+    def path_completer(self):
+        def completer(text, n):
+            return [i + '/' if os.path.isdir(i) else i + ' ' for i in glob(os.path.expanduser(text) + '*')][n]
+        return completer
+    def choice_completer(self, max_completions=None):
+        def completer(text, n):
+            completions = readline.get_line_buffer().split()[:-1]
+            if not max_completions or len(completions) < max_completions:
+                return [i + ' ' for i in self.choices if i.startswith(text) and i not in completions][n]
+        return completer
+    def path(self, check=lambda _:True):
+        while True:
+            readline.set_completer(self.path_completer())
+            print(self.label + ': ', end='')
+            answer = input('').strip()
+            if answer:
+                if check(answer):
+                    return answer
+                else:
+                    print('Por favor indique una ruta válida')
+            else:
+                print('Por favor indique una ruta')
+    def yesno(self):
+        while True:
+            readline.set_completer(self.choice_completer(1))
+            print(self.label, end='')
+            answer = input(' ').strip()
+            if answer:
+                if answer == self.yes:
+                    return True
+                elif answer == self.no:
+                    return False
+                else:
+                    print('Por favor responda "{}" para confirmar o "{}" para cancelar:'.format(self.yes, self.no))
+            elif self.default is True or self.default is False:
+                return self.default
+    def one(self):
+        readline.set_completer(self.choice_completer(1))
+        print(self.label)
+        for choice in self.choices:
+            print(' '*2 + choice);
+        while True:
+            choice = input('Elección (TAB para autocompletar): ').strip()
+            if choice in self.choices:
+                return choice
+            else:
+                messages.warning('Elección inválida, intente de nuevo')
+    def some(self):
+        readline.set_completer(self.choice_completer(len(self.choices)))
+        print(self.label)
+        for choice in self.choices:
+            print(' '*2 + choice);
+        while True:
+            choice = input('Selección (TAB para autocompletar): ').strip().split()
+            if set(choice) <= set(self.choices):
+                return choice
+            else:
+                messages.warning('Selección inválida, intente de nuevo')
 

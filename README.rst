@@ -12,17 +12,17 @@ Import the runutils module
 
    import runutils
 
-Create a default Choose instance
+Create a default Chooser instance
 
 .. code-block:: python
 
-   prompt = runutils.Choose()
+   prompt = runutils.Chooser()
 
-or create a customized Choose instance
+or create a customized Chooser instance
 
 .. code-block:: python
 
-   prompt = runutils.Choose(
+   prompt = runutils.Chooser(
       shift = 1,
       indent = 3,
       align = 2,
