@@ -33,23 +33,30 @@ or create a customized Chooser instance
       checkbullet = '+',
    )
 
-Set label, choices and defaults
+Set label, choices and default choice for single selection
 
 .. code-block:: python
 
    prompt.set_label('Choose the best day of the week:')
-   prompt.set_choices('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
-   prompt.set_defaults('Friday')
+   prompt.set_choices(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
+   prompt.set_default('Friday')
 
-Prompt for single option
+Prompt for single selection
 
 .. code-block:: python
 
    prompt.single()
 
-Update label and prompt for multiple options
+Keep choices but change label and set default choices for multiple selection
 
 .. code-block:: python
 
-   prompt.set_label('Choose good days of the week:')
+   prompt.set_label('Choose the best days of the week:')
+   prompt.set_defaults(['Friday', 'Saturday'])
+
+Prompt for multiple selection
+
+.. code-block:: python
+
    prompt.multiple()
+

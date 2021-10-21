@@ -44,7 +44,8 @@ class Chooser:
         self.checkbullet = ' ' if checkbullet is None else checkbullet
         self.label = None
         self.choices = None
-        self.defaults = None
+        self.default = None
+        self.defaults = []
     def printradio(self, idx):
         utils.forceWrite(' ' * (self.indent + self.align))
         back_color = self.background_on_switch if idx == self.pos else self.background_color
@@ -128,53 +129,60 @@ class Chooser:
     def set_label(self, label):
         if isinstance(label, str):
             if not label:
-                raise ValueError('<label> can not be empty')
+                raise ValueError('label string can not be null')
         else:
-            raise ValueError('<label> must be a string')
+            raise ValueError('label must be a string')
         self.label = label
-    def set_choices(self, *choices):
-        if not choices:
-            raise ValueError('<choices> can not be empty')
+    def set_choices(self, choices):
+        if isinstance(choices, (list, tuple)):
+            if not choices:
+                raise ValueError('choices list can not be empty')
+        else:
+            raise ValueError('choices must be a list or tuple')
         self.choices = choices
-    def set_defaults(self, *defaults):
-        if not defaults:
-            raise ValueError('<defaults> can not be empty')
+    def set_default(self, default):
+        if isinstance(default, str):
+            if not default:
+                raise ValueError('default string can not be null')
+        else:
+            raise ValueError('default must be a string')
+        self.default = default
+    def set_defaults(self, defaults):
+        if isinstance(defaults, (list, tuple)):
+            if not defaults:
+                raise ValueError('defaults list can not be empty')
+        else:
+            raise ValueError('defaults must be a list or tuple')
         self.defaults = defaults
     def single(self):
         if self.label is None:
-            raise ValueError('<label> must be defined')
+            raise ValueError('label must be defined')
         if self.choices is None:
-            raise ValueError('<choices> must be defined')
-        if self.defaults is None:
-            default = self.choices[0]
-        elif len(self.defaults) > 1:
-            raise ValueError('There must be only one <default>')
-        elif self.defaults[0] in self.choices:
-            default = self.defaults[0]
+            raise ValueError('choices must be defined')
+        if self.default is None:
+            self.pos = 0
         else:
-            raise ValueError('<default> must be an element of <choices>')
+            try:
+                self.pos = self.choices.index(self.default)
+            except ValueError:
+                raise ValueError('default must be an element of <choices>')
         self.print = self.printradio
         self.toggle = self.toggleradio
         self.accept = self.acceptradio
         self.max_width = len(max(self.choices, key = len)) + self.pad_right
-        self.pos = self.choices.index(default)
         return self.render()
     def multiple(self):
         if self.label is None:
-            raise ValueError('<label> must be defined')
+            raise ValueError('label must be defined')
         if self.choices is None:
-            raise ValueError('<choices> must be defined')
-        if self.defaults is None:
-            defaults = []
-        elif all([i in self.choices for i in self.defaults]):
-            defaults = self.defaults
-        else:
+            raise ValueError('choices must be defined')
+        if any([i not in self.choices for i in self.defaults]):
             raise ValueError('<defaults> must be a subset of <choices>')
         self.print = self.printcheck
         self.toggle = self.togglecheck
         self.accept = self.acceptcheck
         self.max_width = len(max(self.choices, key = len)) + self.pad_right
-        self.checked = [True if i in defaults else False for i in self.choices]
+        self.checked = [True if i in self.defaults else False for i in self.choices]
         self.pos = 0
         return self.render()
 
@@ -188,19 +196,22 @@ class Completer(object):
     def set_label(self, label):
         if isinstance(label, str):
             if not label:
-                raise ValueError('<label> can not be empty')
+                raise ValueError('label string can not be null')
         else:
-            raise ValueError('<label> must be a string')
+            raise ValueError('label must be a string')
         self.label = label
-    def set_choices(self, *choices):
-        if not choices:
-            raise ValueError('<choices> can not be empty')
+    def set_choices(self, choices):
+        if isinstance(choices, (list, tuple)):
+            if not choices:
+                raise ValueError('choices list can not be empty')
+        else:
+            raise ValueError('choices must be a list or tuple')
         self.choices = choices
     def set_yesno(self, yes, no, default=None):
         if not yes:
-            raise ValueError('<yes> must be a non empty string')
+            raise ValueError('yes string must be a non empty string')
         if not no:
-            raise ValueError('<no> must be a non empty string')
+            raise ValueError('no string must be a non empty string')
         self.yes = yes
         self.no = no
         self.choices = (yes, no)
