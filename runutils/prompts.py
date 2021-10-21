@@ -140,7 +140,7 @@ class Chooser:
         if not defaults:
             raise ValueError('<defaults> can not be empty')
         self.defaults = defaults
-    def one(self):
+    def single(self):
         if self.label is None:
             raise ValueError('<label> must be defined')
         if self.choices is None:
@@ -159,7 +159,7 @@ class Chooser:
         self.max_width = len(max(self.choices, key = len)) + self.pad_right
         self.pos = self.choices.index(default)
         return self.render()
-    def some(self):
+    def multiple(self):
         if self.label is None:
             raise ValueError('<label> must be defined')
         if self.choices is None:
@@ -241,7 +241,7 @@ class Completer(object):
                     print('Por favor responda "{}" para confirmar o "{}" para cancelar:'.format(self.yes, self.no))
             elif self.default is True or self.default is False:
                 return self.default
-    def one(self):
+    def single(self):
         readline.set_completer(self.choice_completer(1))
         print(self.label)
         for choice in self.choices:
@@ -252,7 +252,7 @@ class Completer(object):
                 return choice
             else:
                 messages.warning('Elección inválida, intente de nuevo')
-    def some(self):
+    def multiple(self):
         readline.set_completer(self.choice_completer(len(self.choices)))
         print(self.label)
         for choice in self.choices:

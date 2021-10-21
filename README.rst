@@ -41,15 +41,15 @@ Set label, choices and defaults
    prompt.set_choices('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
    prompt.set_defaults('Friday')
 
-Prompt for only one option
+Prompt for single option
 
 .. code-block:: python
 
-   prompt.one()
+   prompt.single()
 
-Update label and prompt for one or more options
+Update label and prompt for multiple options
 
 .. code-block:: python
 
    prompt.set_label('Choose good days of the week:')
-   prompt.some()
+   prompt.multiple()
