@@ -1,2 +1,2 @@
-from .prompts import Chooser
+from .prompts import Selector
 from .prompts import Completer

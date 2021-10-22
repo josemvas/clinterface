@@ -12,17 +12,17 @@ Import the runutils module
 
    import runutils
 
-Create a default Chooser instance
+Create a default Selector instance
 
 .. code-block:: python
 
-   prompt = runutils.Chooser()
+   selector = runutils.Selector()
 
-or create a customized Chooser instance
+or create a customized Selector instance
 
 .. code-block:: python
 
-   prompt = runutils.Chooser(
+   selector = runutils.Selector(
       shift = 1,
       indent = 3,
       align = 2,
@@ -33,30 +33,29 @@ or create a customized Chooser instance
       checkbullet = '+',
    )
 
-Set label, choices and default choice for single selection
+Set label, options and default choice
 
 .. code-block:: python
 
-   prompt.set_label('Choose the best day of the week:')
-   prompt.set_choices(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
-   prompt.set_default('Friday')
+   selector.label = 'Choose the best day of the week:'
+   selector.options = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+   selector.default = 'Friday'
 
-Prompt for single selection
-
-.. code-block:: python
-
-   prompt.single()
-
-Keep choices but change label and set default choices for multiple selection
+...and prompt for single choice
 
 .. code-block:: python
 
-   prompt.set_label('Choose the best days of the week:')
-   prompt.set_defaults(['Friday', 'Saturday'])
+   selector.singlechoice()
 
-Prompt for multiple selection
+Then change label and default choices
 
 .. code-block:: python
 
-   prompt.multiple()
+   selector.label = 'Choose the best days of the week:'
+   selector.default = ['Friday', 'Saturday']
 
+...and prompt for multiple choice
+
+.. code-block:: python
+
+   selector.multiplechoice()
