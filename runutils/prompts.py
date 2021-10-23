@@ -163,7 +163,7 @@ class Selector:
                 try:
                     self.pos = self.options.index(self.default)
                 except ValueError:
-                    raise ValueError('default must be an element of <options>')
+                    raise ValueError('default must be an element of options') from None
             else:
                 raise ValueError('default string can not be null')
         else:

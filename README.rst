@@ -41,20 +41,21 @@ Set label, options and default choice
    selector.options = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
    selector.default = 'Friday'
 
-...and prompt for single choice
+and prompt for single choice
 
 .. code-block:: python
 
    selector.singlechoice()
 
-Then change label and default choices
+Set label, options and default choices
 
 .. code-block:: python
 
    selector.label = 'Choose the best days of the week:'
+   selector.options = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
    selector.default = ['Friday', 'Saturday']
 
-...and prompt for multiple choice
+and prompt for multiple choice
 
 .. code-block:: python
 
