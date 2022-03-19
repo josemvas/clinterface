@@ -1,7 +1,7 @@
-Runtime Python utilities
-#########################
+Console utilities for command line interfaces
+#############################################
 
-RunUtils is a collection of Python utilities to display messages, launch interactive prompts and handle files. It is partly based on `bullet <https://github.com/Mckinsey666/bullet>`_.
+A collection of console utilities to display messages and interactive prompts. It is partly based on `bullet <https://github.com/Mckinsey666/bullet>`_.
  
 Quick start
 ***********
