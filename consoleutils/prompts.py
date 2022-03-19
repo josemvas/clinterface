@@ -10,35 +10,117 @@ from . import cursor
 from . import keyhandler
 from . import messages
 
-def check_label(label):
-    if label is None:
-        raise ValueError('label must be defined')
-    elif isinstance(label, str):
-        if not label:
-            raise ValueError('label string can not be null')
-    else:
-        raise ValueError('label must be a string')
 
-def check_optionlist(options):
-    if options is None:
-        raise ValueError('options must be defined')
-    elif isinstance(options, (list, tuple)):
-        if not options:
-            raise ValueError('options list can not be empty')
-    else:
-        raise ValueError('options must be a list or tuple')
+class Prompt:
+    def check_prompt(self):
+        if self.message is None:
+            raise ValueError('message must be defined')
+        elif isinstance(self.message, str):
+            if not self.message:
+                raise ValueError('message string can not be null')
+        else:
+            raise ValueError('message must be a string')
+    def check_options(self, *classes):
+        if self.options is None:
+            raise ValueError('options must be defined')
+        elif isinstance(self.options, classes):
+            if not self.options:
+                raise ValueError('options can not be empty')
+        else:
+            raise ValueError('options must be {}'.format(' or '.join(classes)))
 
-def check_optiondict(options):
-    if options is None:
-        raise ValueError('options must be defined')
-    elif isinstance(options, (dict, OrderedDict)):
-        if not options:
-            raise ValueError('options dict can not be empty')
-    else:
-        raise ValueError('options must be a dict or ordered dict')
+class Completer(Prompt):
+    def __init__(self, delims=' \t\n'):
+        readline.set_completer_delims(delims)
+        readline.parse_and_bind('tab: complete')
+        self.message = None
+        self.options = None
+        self.default = None
+    def file_path_completer(self):
+        def completer(text, n):
+            return [i + '/' if os.path.isdir(i) else i + ' ' for i in glob(os.path.expanduser(text) + '*')][n]
+        return completer
+    def directory_path_completer(self):
+        def completer(text, n):
+            return [i + '/' for i in glob(os.path.expanduser(text) + '*')][n]
+        return completer
+    def choice_completer(self, max_completions=None):
+        def completer(text, n):
+            completions = readline.get_line_buffer().split()[:-1]
+            if not max_completions or len(completions) < max_completions:
+                return [i + ' ' for i in self.options if i.startswith(text) and i not in completions][n]
+        return completer
+    def file_path(self):
+        check_prompt()
+        while True:
+            readline.set_completer(self.file_path_completer())
+            print(self.message + ':')
+            answer = input('').strip()
+            if answer:
+                if os.path.isfile(answer):
+                    return answer
+                elif os.path.exists(answer):
+                    print('Path exists but is not a file, try again')
+                else:
+                    print('File does not exist, try again')
+    def directory_path(self):
+        check_prompt()
+        while True:
+            readline.set_completer(self.directory_path_completer())
+            print(self.message + ':')
+            answer = input('').strip()
+            if answer:
+                if os.path.isdir(answer):
+                    return answer
+                elif os.path.exists(answer):
+                    print('Path exists but is not a directory, try again')
+                else:
+                    print('Directory does not exist, try again')
+    def single_choice(self):
+        self.check_prompt()
+        self.check_options(list, tuple)
+        readline.set_completer(self.choice_completer(1))
+        print(self.message)
+        for option in self.options:
+            print(' '*2 + option);
+        while True:
+            option = input('Single choice (press TAB to autocomplete): ').strip()
+            if option in self.options:
+                return option
+            else:
+                messages.warning('Invalid choice, try again')
+    def multiple_choice(self):
+        self.check_prompt()
+        self.check_options(list, tuple)
+        readline.set_completer(self.choice_completer(len(self.options)))
+        print(self.message)
+        for option in self.options:
+            print(' '*2 + option);
+        while True:
+            option = input('Multiple choice (press TAB to autocomplete): ').strip().split()
+            if set(option) <= set(self.options):
+                return option
+            else:
+                messages.warning('Invalid choice, try again')
+    def binary_choice(self):
+        self.check_prompt()
+        self.check_options(dict, OrderedDict)
+        while True:
+            readline.set_completer(self.choice_completer(1))
+            print(self.message, end='')
+            answer = input(' ').strip()
+            if answer:
+                if answer == self.options[True]:
+                    return True
+                elif answer == self.options[False]:
+                    return False
+                else:
+                    print('Invalid choice, type {} to accept or {} to reject'.format('/'.join(self.options[True]), '/'.join(self.options[False])))
+            elif self.default in (True, False):
+                return self.default
 
 @keyhandler.init
-class Selector:
+class Selector(Prompt):
     def __init__(
             self, 
             shift                     = 0,
@@ -70,7 +152,7 @@ class Selector:
         self.pad_right = max(int(pad_right), 0)
         self.radiobullet = ' ' if radiobullet is None else radiobullet
         self.checkbullet = ' ' if checkbullet is None else checkbullet
-        self.label = None
+        self.message = None
         self.options = None
         self.default = None
     def printradio(self, idx):
@@ -142,7 +224,7 @@ class Selector:
         utils.moveCursorDown(len(self.options) - self.pos)
         raise KeyboardInterrupt
     def render(self):
-        utils.forceWrite(' ' * self.indent + self.label + '\n')
+        utils.forceWrite(' ' * self.indent + self.message + '\n')
         utils.forceWrite('\n' * self.shift)
         for i in range(len(self.options)):
             self.print(i)
@@ -153,13 +235,13 @@ class Selector:
                 ret = self.handle_input()
                 if ret is not None:
                     return ret
-    def singlechoice(self):
-        check_label(self.label)
-        check_optionlist(self.options)
+    def single_choice(self):
+        self.check_prompt()
+        self.check_options(list, tuple)
         if self.default is None:
             self.pos = 0
-        elif isinstance(default, str):
-            if default:
+        elif isinstance(self.default, str):
+            if self.default:
                 try:
                     self.pos = self.options.index(self.default)
                 except ValueError:
@@ -173,9 +255,9 @@ class Selector:
         self.accept = self.acceptradio
         self.max_width = len(max(self.options, key = len)) + self.pad_right
         return self.render()
-    def multiplechoice(self):
-        check_label(self.label)
-        check_optionlist(self.options)
+    def multiple_choice(self):
+        self.check_prompt()
+        self.check_options(list, tuple)
         if self.default is None:
             self.checked = [False for i in self.options]
         elif isinstance(self.default, (list, tuple)):
@@ -190,77 +272,4 @@ class Selector:
         self.max_width = len(max(self.options, key = len)) + self.pad_right
         self.pos = 0
         return self.render()
-
-class Completer(object):
-    def __init__(self, delims=' \t\n'):
-        readline.set_completer_delims(delims)
-        readline.parse_and_bind('tab: complete')
-        self.label = None
-        self.options = None
-        self.default = None
-    def path_completer(self):
-        def completer(text, n):
-            return [i + '/' if os.path.isdir(i) else i + ' ' for i in glob(os.path.expanduser(text) + '*')][n]
-        return completer
-    def choice_completer(self, max_completions=None):
-        def completer(text, n):
-            completions = readline.get_line_buffer().split()[:-1]
-            if not max_completions or len(completions) < max_completions:
-                return [i + ' ' for i in self.options if i.startswith(text) and i not in completions][n]
-        return completer
-    def path(self, check=lambda _:True):
-        check_label(self.label)
-        while True:
-            readline.set_completer(self.path_completer())
-            print(self.label + ': ', end='')
-            answer = input('').strip()
-            if answer:
-                if check(answer):
-                    return answer
-                else:
-                    print('Por favor indique una ruta válida')
-            else:
-                print('Por favor indique una ruta')
-    def singlechoice(self):
-        check_label(self.label)
-        check_optionlist(self.options)
-        readline.set_completer(self.choice_completer(1))
-        print(self.label)
-        for option in self.options:
-            print(' '*2 + option);
-        while True:
-            option = input('Elección (TAB para autocompletar): ').strip()
-            if option in self.options:
-                return option
-            else:
-                messages.warning('Elección inválida, intente de nuevo')
-    def multiplechoice(self):
-        check_label(self.label)
-        check_optionlist(self.options)
-        readline.set_completer(self.choice_completer(len(self.options)))
-        print(self.label)
-        for option in self.options:
-            print(' '*2 + option);
-        while True:
-            option = input('Selección (TAB para autocompletar): ').strip().split()
-            if set(option) <= set(self.options):
-                return option
-            else:
-                messages.warning('Selección inválida, intente de nuevo')
-    def binarychoice(self):
-        check_label(self.label)
-        check_optiondict(self.options)
-        while True:
-            readline.set_completer(self.choice_completer(1))
-            print(self.label, end='')
-            answer = input(' ').strip()
-            if answer:
-                if answer == self.options[True]:
-                    return True
-                elif answer == self.options[False]:
-                    return False
-                else:
-                    print('Por favor responda "{}" para confirmar o "{}" para cancelar:'.format(self.options[True], self.options[False]))
-            elif self.default in (True, False):
-                return self.default
 

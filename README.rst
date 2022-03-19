@@ -6,23 +6,23 @@ RunUtils is a collection of Python utilities to display messages, launch interac
 Quick start
 ***********
 
-Import the runutils module
+Import the consoleutils module
 
 .. code-block:: python
 
-   import runutils
+   import consoleutils
 
 Create a default Selector instance
 
 .. code-block:: python
 
-   selector = runutils.Selector()
+   selector = consoleutils.Selector()
 
 or create a customized Selector instance
 
 .. code-block:: python
 
-   selector = runutils.Selector(
+   selector = consoleutils.Selector(
       shift = 1,
       indent = 3,
       align = 2,
@@ -33,30 +33,29 @@ or create a customized Selector instance
       checkbullet = '+',
    )
 
-Set label, options and default choice
+Set the message, options and default choice
 
 .. code-block:: python
 
-   selector.label = 'Choose the best day of the week:'
+   selector.message = 'Choose the best day of the week:'
    selector.options = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
    selector.default = 'Friday'
 
-and prompt for single choice
+and prompt for a single choice
 
 .. code-block:: python
 
-   selector.singlechoice()
+   selector.single_choice()
 
-Set label, options and default choices
+Set the message and default choices but use the same options
 
 .. code-block:: python
 
-   selector.label = 'Choose the best days of the week:'
-   selector.options = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+   selector.message = 'Choose the best days of the week:'
    selector.default = ['Friday', 'Saturday']
 
-and prompt for multiple choice
+and prompt for multiple choices
 
 .. code-block:: python
 
-   selector.multiplechoice()
+   selector.multiple_choice()
