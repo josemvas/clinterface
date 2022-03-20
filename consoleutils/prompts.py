@@ -12,7 +12,6 @@ from . import messages
 
 
 def check_options(options):
-    print(type(options).__name__)
     if isinstance(options, (list, tuple)):
         if not options:
             raise ValueError('Options can not be empty')
