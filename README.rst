@@ -1,28 +1,28 @@
-Console utilities for command line interfaces
-#############################################
+Command line interface tools
+############################
 
-A collection of console utilities to display messages and interactive prompts. It is partly based on `bullet <https://github.com/Mckinsey666/bullet>`_.
+A small collection of tools to display messages and prompts with autocompletion and interactive menus. It is partly based on `bullet <https://github.com/Mckinsey666/bullet>`_.
  
 Quick start
 ***********
 
-Import the consoleutils module
+Import the module
 
 .. code-block:: python
 
-   import consoleutils
+   import clinterface
 
 Create a default Selector instance
 
 .. code-block:: python
 
-   selector = consoleutils.Selector()
+   selector = clinterface.Selector()
 
 or create a customized Selector instance
 
 .. code-block:: python
 
-   selector = consoleutils.Selector(
+   selector = clinterface.Selector(
       shift = 1,
       indent = 3,
       align = 2,
