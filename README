@@ -1,0 +1,69 @@
+<!-- -*- mode: markdown -*- -->
+
+clinterface
+===========
+
+**clinterface** is a simple command line interface library to
+display tab-completion prompts and interactive menus.
+
+Quick start
+-----------
+
+Import the module
+
+    from clinterface import prompts
+
+Create a default Selector instance
+
+    selector = prompts.Selector()
+
+or create a customized Selector instance
+
+    selector = prompts.Selector(
+        shift = 1,
+        indent = 3,
+        align = 2,
+        margin = 1,
+        pad_left = 1,
+        pad_right = 1,
+        radiobullet = '*',
+        checkbullet = '+',
+    )
+
+Set the options and defaults from a list
+
+    selector.set_options([
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
+    ])
+    selector.set_single_default('Friday')
+    selector.set_multiple_defaults(['Friday', 'Saturday', 'Sunday'])
+
+or alternativey set the options and defaults from a dictionary
+
+    selector.set_options({
+        'Mon':'Monday',
+        'Tues':'Tuesday',
+        'Wed':'Wednesday',
+        'Thurs':'Thursday',
+        'Fri':'Friday',
+        'Sat':'Saturday',
+        'Sun':'Sunday',
+    })
+    selector.set_single_default('Fri')
+    selector.set_multiple_defaults(['Fri', 'Sat', 'Sun'])
+
+Prompt for a single choice
+
+    selector.set_message('Choose the best day of the week:')
+    selector.single_choice()
+
+Prompt for multiple choices
+
+    selector.set_message('Choose the good days of the week:')
+    selector.multiple_choices()
