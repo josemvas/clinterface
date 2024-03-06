@@ -1,44 +1,31 @@
 import sys
+from string import Template
 from .colors import DEFAULT, GREEN, YELLOW, RED
 
-def join_args(f):
-    def wrapper(*args, **kwargs):
-        return f(' '.join(args), ', '.join('{}={}'.format(k, v) for k, v in kwargs.items()))
-    return wrapper
-
-@join_args
-def success(message, details):
+def success(message, details=None):
     if details:
-        formatted_message = '{} ({})'.format(message, details)
+        print(GREEN + "{} ({})".format(message, details) + DEFAULT)
     else:
-        formatted_message = message
-    print(GREEN + formatted_message + DEFAULT)
+        print(GREEN + message + DEFAULT)
 
-@join_args
-def warning(message, details):
+def failure(message, details=None):
     if details:
-        formatted_message = 'Warning: {} ({})'.format(message, details)
+        print(RED + "{} ({})".format(message, details) + DEFAULT)
     else:
-        formatted_message = 'Warning: {}'.format(message)
-    print(YELLOW + formatted_message + DEFAULT)
+        print(RED + message + DEFAULT)
 
-@join_args
-def failure(message, details):
+def warning(message, details=None):
     if details:
-        formatted_message = 'Failure: {} ({})'.format(message, details)
+        print(YELLOW + "Warning: {} ({})".format(message, details) + DEFAULT)
     else:
-        formatted_message = 'Failure: {}'.format(message)
-    print(RED + formatted_message + DEFAULT)
+        print(YELLOW + 'Warning: {}'.format(message) + DEFAULT)
 
-@join_args
-def error(message, details):
+def error(message, details=None):
     if details:
-        formatted_message = '{} ({})'.format(message, details)
+        raise SystemExit(RED + "Error: {} ({})".format(message, details) + DEFAULT)
     else:
-        formatted_message = message
-    raise SystemExit(RED + formatted_message + DEFAULT)
+        raise SystemExit(RED + 'Error: {}'.format(message) + DEFAULT)
 
-@join_args
 def unknown_error(message):
     fcode = sys._getframe(1).f_code
     raise SystemExit(RED + '{}:{} {}'.format(fcode.co_filename, fcode.co_name, message) + DEFAULT)

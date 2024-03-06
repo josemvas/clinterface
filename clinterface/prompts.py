@@ -101,7 +101,7 @@ class Completer(Prompt):
         readline.parse_and_bind('tab: complete')
         readline.set_completer(path_completer())
         while True:
-            print(self.message + ':')
+            print(self.message)
             path = input('').rstrip()
             if path:
                 if os.path.isfile(path):
@@ -117,7 +117,7 @@ class Completer(Prompt):
         readline.parse_and_bind('tab: complete')
         readline.set_completer(path_completer())
         while True:
-            print(self.message + ':')
+            print(self.message)
             path = input('').rstrip()
             if path:
                 if os.path.isdir(path):
