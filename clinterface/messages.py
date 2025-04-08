@@ -1,31 +1,51 @@
-import sys
 from string import Template
+from collections import defaultdict
 from .colors import DEFAULT, GREEN, YELLOW, RED
 
-def success(message, details=None):
-    if details:
-        print(GREEN + "{} ({})".format(message, details) + DEFAULT)
-    else:
-        print(GREEN + message + DEFAULT)
+class TrackingDict(defaultdict):
+# Subclase de defaultdict que registra las claves accedidas durante las operaciones
+    def __init__(self, *args, **kwargs):
+        self.used_keys = set()
+        super().__init__(*args, **kwargs)
+    def __getitem__(self, key):
+        self.used_keys.add(key)
+        return super().__getitem__(key)
 
-def failure(message, details=None):
-    if details:
-        print(RED + "{} ({})".format(message, details) + DEFAULT)
-    else:
-        print(RED + message + DEFAULT)
+def template_substitution(func):
+    def wrapper(message, **kwargs):
+        # Crear un diccionario de seguimiento que registrará las claves utilizadas
+        tracking_dict = TrackingDict(str)
+        # Inicializar con los valores proporcionados
+        tracking_dict.update(kwargs)
+        # Crear el template y realizar la sustitución
+        template = Template(message)
+        substituted_message = template.safe_substitute(tracking_dict)
+        # Identificar las claves no utilizadas
+        unused_kwargs = {k: v for k, v in kwargs.items() if k not in tracking_dict.used_keys}
+        # Si hay kwargs no utilizados, añadirlos al final del mensaje
+        if unused_kwargs:
+            unused_str = ", ".join(f"{k}={v}" for k, v in unused_kwargs.items())
+            substituted_message = f"{substituted_message} ({unused_str})"
+        # Llamar a la función decorada con el mensaje modificado
+        return func(substituted_message)
+    return wrapper
 
-def warning(message, details=None):
-    if details:
-        print(YELLOW + "Warning: {} ({})".format(message, details) + DEFAULT)
-    else:
-        print(YELLOW + 'Warning: {}'.format(message) + DEFAULT)
+def color_print(text, color):
+    print(color + text + DEFAULT)
 
-def error(message, details=None):
-    if details:
-        raise SystemExit(RED + "Error: {} ({})".format(message, details) + DEFAULT)
-    else:
-        raise SystemExit(RED + 'Error: {}'.format(message) + DEFAULT)
+@template_substitution
+def success(message):
+    color_print(message, GREEN)
 
-def unknown_error(message):
-    fcode = sys._getframe(1).f_code
-    raise SystemExit(RED + '{}:{} {}'.format(fcode.co_filename, fcode.co_name, message) + DEFAULT)
+@template_substitution
+def failure(message):
+    color_print(message, RED)
+
+@template_substitution
+def error(message):
+    color_print(f'ERROR: {message}', RED)
+    raise SystemExit
+
+@template_substitution
+def warning(message):
+    color_print(f'WARNING: {message}', YELLOW)

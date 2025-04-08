@@ -1,107 +1,55 @@
 import os
 import sys
 import readline
-from glob import glob
+from pathlib import Path
 from collections.abc import Iterable, Mapping
 from .charDef import *
 from . import colors
 from . import utils
 from . import cursor
 from . import keyhandler
-from . import messages
 
-def path_completer():
-    def f(text, n):
-        return [i + '/' if os.path.isdir(i) else i + ' ' for i in glob(os.path.expanduser(text) + '*')][n]
-    return f
+def new_path_completer():
+    matches = {}
+    def completer(input_text, state):
+        input_path = Path(input_text).expanduser().resolve()
+        if input_text not in matches:
+            if input_path.is_dir() and input_text.endswith('/'):
+                parent_dir = input_path
+                pattern = '*'
+            else:
+                parent_dir = input_path.parent
+                pattern = input_path.name + '*'
+            matches[input_text] = [str(i) + '/' if i.is_dir() else str(i) + ' ' for i in parent_dir.glob(pattern)]
+        return matches[input_text][state]
+    return completer
 
-def single_choice_completer(completion_words):
-    def f(text, n):
-        return [i + ' ' for i in completion_words if i.startswith(text)][n]
-    return f
+def new_singlechoice_completer(completion_words):
+    matches = {}
+    def completer(input_text, state):
+        if input_text not in matches:
+            matches[input_text] = [i + ' ' for i in completion_words if i.startswith(input_text)]
+        return matches[input_text][state]
+    return completer
 
-def multiple_choice_completer(completion_words, max_completions=None):
-    def f(text, n):
+def new_multiplechoice_completer(completion_words, max_completions=None):
+    matches = {}
+    def completer(input_text, state):
         completions = readline.get_line_buffer().split('&')[:-1]
         if max_completions is None or len(completions) < max_completions:
-            return [i + ' & ' for i in completion_words if i.startswith(text) and i not in completions.strip()][n]
-    return f
+            if input_text not in matches:
+                matches[input_text] = [i + ' & ' for i in completion_words if i.startswith(input_text) and i not in completions.strip()]
+            return matches[input_text][state]
+    return completer
 
-class Prompt:
-    def __init__(self):
-        self.message = None
-        self.optkeys = None
-        self.options = None
-        self.truthy_options = None
-        self.falsy_options = None
-        self.default = None
-    def set_message(self, message):
-        if isinstance(message, str):
-            self.message = message
-        else:
-            raise TypeError('Message must be a string')
-    def set_binary_default(self, default):
-        if default in (True, False):
-            self.default = default
-        else:
-            raise ValueError('default must be True or False') from None
-    def set_single_default(self, default):
-        if self.options is None:
-            raise ValueError('Options must be set before defaults') from None
-        if default not in self.optkeys:
-            raise ValueError('default must be an element of option keys') from None
-        self.pos = self.optkeys.index(default)
-    def set_multiple_defaults(self, defaults):
-        if self.options is None:
-            raise ValueError('Options must be set before defaults') from None
-        if isinstance(defaults, (list, tuple)):
-            if any([i not in self.optkeys for i in defaults]):
-                raise ValueError('default list must be a subset of option keys')
-            self.checked = [True if i in defaults else False for i in self.optkeys]
-        else:
-            raise ValueError('default must be a list or tuple')
-    def set_options(self, options):
-        if isinstance(options, Iterable):
-            if not options:
-                raise ValueError('Options can not be empty')
-            self.optkeys = []
-            self.options = []
-            if isinstance(options, Mapping):
-                for key, value in options.items():
-                    self.optkeys.append(key)
-                    self.options.append(value)
-            else:
-                for item in options:
-                    self.optkeys.append(item)
-                    self.options.append(item)
-        else:
-            raise TypeError('Options must be a list, tuple or dict')
-        self.pos = 0
-        self.checked = [False]*len(options)
-    def set_truthy_options(self, options):
-        if isinstance(options, (list, tuple)):
-            if not options:
-                raise ValueError('Options can not be empty')
-            self.truthy_options = options
-        else:
-            raise TypeError('Options must be a list or tuple')
-    def set_falsy_options(self, options):
-        if isinstance(options, (list, tuple)):
-            if not options:
-                raise ValueError('Options can not be empty')
-            self.falsy_options = options
-        else:
-            raise TypeError('Options must be a list or tuple')
-
-class Completer(Prompt):
-    def file_path(self):
-        if self.message is None:
-            raise ValueError('Message is not set')
+class Completer:
+    def file_path(self, prompt):
         readline.set_completer_delims('\n')
         readline.parse_and_bind('tab: complete')
-        readline.set_completer(path_completer())
+        path_completer = new_path_completer()
+        readline.set_completer(path_completer)
         while True:
-            print(self.message)
+            print(prompt)
             path = input('').rstrip()
             if path:
                 if os.path.isfile(path):
@@ -110,14 +58,13 @@ class Completer(Prompt):
                     print('Path "{}" is not a file, try again'.format(path))
                 else:
                     print('File "{}" does not exist, try again'.format(path))
-    def directory_path(self):
-        if self.message is None:
-            raise ValueError('Message is not set')
+    def directory_path(self, prompt):
         readline.set_completer_delims('\n')
         readline.parse_and_bind('tab: complete')
-        readline.set_completer(path_completer())
+        path_completer = new_path_completer()
+        readline.set_completer(path_completer)
         while True:
-            print(self.message)
+            print(prompt)
             path = input('').rstrip()
             if path:
                 if os.path.isdir(path):
@@ -126,68 +73,58 @@ class Completer(Prompt):
                     print('Path "{}" is not a directory, try again'.format(path))
                 else:
                     print('Directory "{}" does not exist, try again'.format(path))
-    def binary_choice(self):
-        if self.message is None:
-            raise ValueError('Message is not set')
-        if self.truthy_options is None:
-            raise ValueError('Truthy options are not set')
-        if self.truthy_options is None:
-            raise ValueError('Falsy options are not set')
+    def binary_choice(self, prompt, truthy_options, falsy_options, default=None):
+        if all(default is x for x in (None, True, False)):
+            raise ValueError('default must be None, True or False') from None
         readline.set_completer_delims('\n')
         readline.parse_and_bind('tab: complete')
-        readline.set_completer(single_choice_completer(self.truthy_options + self.falsy_options))
+        singlechoice_completer = new_singlechoice_completer(truthy_options + falsy_options)
+        readline.set_completer(singlechoice_completer)
         while True:
-            print(self.message, end='')
+            print(prompt, end='')
             choice = input(' ').rstrip()
             if choice:
-                if choice in self.truthy_options:
+                if choice in truthy_options:
                     return True
-                elif choice in self.falsy_options:
+                elif choice in falsy_options:
                     return False
                 else:
-                    print('Invalid choice, type {} to accept or {} to reject'.format(
-                        '/'.join(self.truthy_options), '/'.join(self.falsy_options)))
-            elif self.default is not None:
-                return self.default
-    def single_choice(self):
-        if self.message is None:
-            raise ValueError('Message is not set')
-        if self.options is None:
-            raise ValueError('Options are not set')
+                    print('Invalid choice, type {} to accept or {} to reject'.format('/'.join(truthy_options), '/'.join(falsy_options)))
+            elif default is not None:
+                return default
+    def single_choice(self, prompt, options, optkeys):
         readline.set_completer_delims('\n')
         readline.parse_and_bind('tab: complete')
-        readline.set_completer(single_choice_completer(self.options))
-        print(self.message)
-        for option in self.options:
+        singlechoice_completer = new_singlechoice_completer(options)
+        readline.set_completer(singlechoice_completer)
+        print('Options:')
+        for option in options:
             print(' '*2 + option)
-        message = 'Single choice (press TAB to autocomplete): '
-        choice = input(message).rstrip()
+        print(message)
+        choice = input('').rstrip()
         while True:
-            if choice not in self.options:
-                messages.warning('Invalid choice, try again')
+            if choice not in options:
+                print('Invalid choice, try again')
             else:
-                return self.optkeys[self.options.index(choice)]
-    def multiple_choices(self):
-        if self.message is None:
-            raise ValueError('Message is not set')
-        if self.options is None:
-            raise ValueError('Options are not set')
+                return optkeys[soptions.index(choice)]
+    def multiple_choices(self, prompt, options, optkeys):
         readline.set_completer_delims(' \t\n')
         readline.parse_and_bind('tab: complete')
-        readline.set_completer(multiple_choice_completer(self.options))
-        print(self.message)
-        for option in self.options:
+        multiplechoice_completer = new_multiplechoice_completer(options)
+        readline.set_completer(multiplechoice_completer)
+        print('Options:')
+        for option in options:
             print(' '*2 + option)
-        message = 'Multiple choice (press TAB to autocomplete): '
-        choices = input(message).split('&')
+        print(message)
+        choices = input('').split('&')
         while True:
-            if any([i.strip() not in self.options for i in choices]):
-                messages.warning('Invalid choices, try again')
+            if any([i.strip() not in options for i in choices]):
+                print('Invalid choices, try again')
             else:
-                return [self.optkeys[self.options.index(i.strip())] for i in choices]
+                return [optkeys[options.index(i.strip())] for i in choices]
 
 @keyhandler.init
-class Selector(Prompt):
+class Selector:
     def __init__(
             self, 
             shift                     = 0,
@@ -219,9 +156,12 @@ class Selector(Prompt):
         self.pad_right = max(int(pad_right), 0)
         self.radiobullet = ' ' if radiobullet is None else radiobullet
         self.checkbullet = ' ' if checkbullet is None else checkbullet
-        self.message = None
-        self.optkeys = None
+        self.prompt = None
         self.options = None
+        self.optkeys = None
+        self.opt_values = None
+        self.pos = 0
+        self.checked = None
     def printradio(self, idx):
         utils.forceWrite(' ' * (self.indent + self.align))
         back_color = self.background_on_switch if idx == self.pos else self.background_color
@@ -232,8 +172,8 @@ class Selector(Prompt):
             utils.cprint(self.radiobullet + ' ' * self.margin, bullet_color, back_color, end = '')
         else:
             utils.cprint(' ' * (len(self.radiobullet) + self.margin), bullet_color, back_color, end = '')
-        utils.cprint(self.options[idx], word_color, back_color, end = '')
-        utils.cprint(' ' * (self.max_width - len(self.options[idx])), on = back_color, end = '')
+        utils.cprint(self.opt_values[idx], word_color, back_color, end = '')
+        utils.cprint(' ' * (self.max_width - len(self.opt_values[idx])), on = back_color, end = '')
         utils.moveCursorHead()
     def toggleradio(self):
         pass
@@ -249,8 +189,8 @@ class Selector(Prompt):
             utils.cprint(self.checkbullet + ' ' * self.margin, bullet_color, back_color, end = '')
         else:
             utils.cprint(' ' * (len(self.checkbullet) + self.margin), bullet_color, back_color, end = '')
-        utils.cprint(self.options[idx], word_color, back_color, end = '')
-        utils.cprint(' ' * (self.max_width - len(self.options[idx])), on = back_color, end = '')
+        utils.cprint(self.opt_values[idx], word_color, back_color, end = '')
+        utils.cprint(' ' * (self.max_width - len(self.opt_values[idx])), on = back_color, end = '')
         utils.moveCursorHead()
     def togglecheck(self):
         self.checked[self.pos] = not self.checked[self.pos]
@@ -273,7 +213,7 @@ class Selector(Prompt):
             self.print(self.pos)
     @keyhandler.register(ARROW_DOWN_KEY)
     def moveDown(self):
-        if self.pos + 1 >= len(self.options):
+        if self.pos + 1 >= len(self.optkeys):
             return
         else:
             utils.clearLine()
@@ -284,37 +224,93 @@ class Selector(Prompt):
             self.print(self.pos)
     @keyhandler.register(NEWLINE_KEY)
     def accept(self):
-        utils.moveCursorDown(len(self.options) - self.pos)
+        utils.moveCursorDown(len(self.optkeys) - self.pos)
         return self.accept()
     @keyhandler.register(INTERRUPT_KEY)
     def interrupt(self):
-        utils.moveCursorDown(len(self.options) - self.pos)
+        utils.moveCursorDown(len(self.optkeys) - self.pos)
         raise KeyboardInterrupt
     def render(self):
-        if self.message is None:
+        if self.prompt is None:
             raise ValueError('Message is not set')
         if self.options is None:
             raise ValueError('Options are not set')
-        utils.forceWrite(' ' * self.indent + self.message + '\n')
+        utils.forceWrite(' ' * self.indent + self.prompt + '\n')
         utils.forceWrite('\n' * self.shift)
-        for i in range(len(self.options)):
+        for i in range(len(self.optkeys)):
             self.print(i)
             utils.forceWrite('\n')
-        utils.moveCursorUp(len(self.options) - self.pos)
+        utils.moveCursorUp(len(self.optkeys) - self.pos)
         with cursor.hide():
             while True:
                 ret = self.handle_input()
                 if ret is not None:
                     return ret
-    def single_choice(self):
+    def single_choice(self, prompt, options, default=None):
+        """
+        Display a selector for choosing a single option
+        Args:
+            prompt: The prompt to display
+            options: A dictionary mapping option keys to display values, or an iterable of options
+            default: The default option key to select (must be one of the option keys)
+        Returns:
+            The selected option key
+        """
+        self.prompt = prompt
+        # Convert options to a dictionary if it's not already
+        if not isinstance(options, Mapping):
+            self.options = {item: item for item in options}
+        else:
+            self.options = options
+        # Get the sorted keys and values for display
+        self.optkeys = list(self.options.keys())
+        self.opt_values = list(self.options.values())
+        # Set default position
+        self.pos = 0
+        if default is not None:
+            if default not in self.optkeys:
+                raise ValueError('default must be an element of option keys')
+            self.pos = self.optkeys.index(default)
+        # Set up rendering functions
         self.print = self.printradio
         self.toggle = self.toggleradio
         self.accept = self.acceptradio
-        self.max_width = len(max(self.options, key = len)) + self.pad_right
+        self.max_width = len(max(self.opt_values, key=len)) + self.pad_right
         return self.render()
-    def multiple_choices(self):
+    def multiple_choices(self, prompt, options, defaults=None):
+        """
+        Display a selector for choosing multiple options
+        Args:
+            prompt: The prompt to display
+            options: A dictionary mapping option keys to display values, or an iterable of options
+            defaults: A list of default option keys to select (must be a subset of option keys)
+        Returns:
+            A list of selected option keys
+        """
+        self.prompt = prompt
+        # Convert options to a dictionary if it's not already
+        if not isinstance(options, Mapping):
+            self.options = {item: item for item in options}
+        else:
+            self.options = options
+        # Get the sorted keys and values for display
+        self.optkeys = list(self.options.keys())
+        self.opt_values = list(self.options.values())
+        # Initialize checked status
+        self.checked = [False] * len(self.optkeys)
+        # Set defaults
+        if defaults is not None:
+            if isinstance(defaults, (list, tuple)):
+                if any(i not in self.optkeys for i in defaults):
+                    raise ValueError('defaults list must be a subset of option keys')
+                self.checked = [True if i in defaults else False for i in self.optkeys]
+            else:
+                raise ValueError('defaults must be a list or tuple')
+        # Set default position
+        self.pos = 0
+        # Set up rendering functions
         self.print = self.printcheck
         self.toggle = self.togglecheck
         self.accept = self.acceptcheck
-        self.max_width = len(max(self.options, key = len)) + self.pad_right
+        self.max_width = len(max(self.opt_values, key=len)) + self.pad_right
         return self.render()
