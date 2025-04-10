@@ -3,73 +3,53 @@
 *CLInterface* is a simple library to display tab-completion prompts
 and interactive menus.
 
-Import the module
+## Preliminary steps
 
-    from clinterface import prompts
+Import modules
 
-## Completer class
+    from clinterface.completion import *
+    from clinterface.selection import *
 
-    completer = prompts.Completer()
+Define options
 
-### Binary choice completer
+    option_list = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    option_dict = {'Mon':'Monday', 'Tues':'Tuesday', 'Wed':'Wednesday', 'Thurs':'Thursday', 'Fri':'Friday', 'Sat':'Saturday', 'Sun':'Sunday'}
 
-    completer.binary_choice(prompt='Do you want to continue?', truthy_options=[yes', 'ok'], falsy_options=['no'])
+## Completion
 
-### Path completer
+Complete a file path
 
-    completer.file_path('Write a file path (press TAB to autocomplete)')
+    complete_filepath(prompt='Write path to file (press TAB to autocomplete)')
 
-## Selector class
+Complete a directory path
 
-Create a default selector instance
+    complete_dirpath(prompt='Write path to directory (press TAB to autocomplete)')
 
-    selector = prompts.Selector()
+Complete a binary choice
 
-or a customized selector instance
+    complete_binary_choice(prompt='Do you want to continue?', truthy_options=['yes', 'ok'], falsy_options=['no'])
 
-    selector = prompts.Selector(
-        shift = 1,
-        indent = 3,
-        align = 2,
-        margin = 1,
-        pad_left = 1,
-        pad_right = 1,
-        radiobullet = '*',
-        checkbullet = 'X',
-    )
+Complete one or several choices
 
-Define options with a list:
+    complete_choices(prompt='Choose the best day of the week:', options=option_list, num_choices=1)
+    complete_choices(prompt='Choose the three best days of the week:', options=option_list, num_choices=3)
 
-    option_list = [
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-        'Sunday',
-    ]
+## Selection
 
-or with a dictionary:
+Select a single option:
 
-    option_dict = {
-        'Mon':'Monday',
-        'Tues':'Tuesday',
-        'Wed':'Wednesday',
-        'Thurs':'Thursday',
-        'Fri':'Friday',
-        'Sat':'Saturday',
-        'Sun':'Sunday',
-    }
+    select_option(prompt='Choose the best day of the week:', options=option_dict)
+    select_option(prompt='Choose the best day of the week:', options=option_dict, default='Fri')
+    select_option(prompt='Choose the best day of the week:', options=option_list, default='Friday')
 
-### Single choice selector
+Select multiple options:
 
-    prompt = 'Choose the best day of the week:'
-    selector.single_choice(prompt=prompt, options=option_list, default='Friday')
-    selector.single_choice(prompt=prompt, options=option_dict, default='Fri')
+    select_options(prompt='Choose the three best days of the week:', options=option_dict)
+    select_options(prompt='Choose the three best days of the week:', options=option_dict, defaults=['Fri','Sat','Sun'])
+    select_options(prompt='Choose the three best days of the week:', options=option_list, defaults=['Friday','Saturday','Sunday'])
+    select_options(prompt='Choose the three best days of the week:', options=option_dict, defaults=['Fri','Sat','Sun'], num_choices=3)
 
-### Multiple choice selector
+Create a customized selector and pass it to the function:
 
-    prompt = 'Choose the two best days of the week:'
-    selector.multiple_choices(prompt=prompt, options=option_list, defaults=['Friday', 'Sunday'])
-    selector.multiple_choices(prompt=prompt, options=option_dict, defaults=['Fri', 'Sun'])
+    customized_selector = Selector(radiobullet = '>', checkbullet = 'X')
+    select_options(prompt='Choose the three best days of the week:', options=option_dict, defaults=['Fri','Sat','Sun'], selector=customized_selector)

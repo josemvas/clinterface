@@ -3,14 +3,10 @@ import sys
 import tty, termios
 import string
 import shutil
-from string import Template
 from .charDef import *
 from . import colors
 
 COLUMNS, _ = shutil.get_terminal_size()  ## Size of console
-
-def _(message, **kwargs):
-    return Template(message).safe_substitute(kwargs)
 
 def mygetc():
     ''' Get raw characters from input. '''
