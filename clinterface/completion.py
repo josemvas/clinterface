@@ -6,6 +6,7 @@ __all__ = (
 )
 
 import readline
+from sys import stdout
 from string import whitespace
 from os import path, scandir
 from .colors import YELLOW
@@ -69,7 +70,7 @@ class FilePathCompleter:
                 if entry.is_dir():
                     return escaped_string(entry.path[start:]) + '/'
                 else:
-                    return escaped_string(entry.path[start:]) + '\x20'
+                    return escaped_string(entry.path[start:]) + ' '
         return None
 
 class DirPathCompleter:
@@ -97,7 +98,7 @@ def make_option_completer(options, max_completions=None):
     def completer(input_text, state):
         completed, completing = split_escaped(readline.get_line_buffer())
         if max_completions is None or len(completed) < max_completions:
-            return [escaped_string(x) + '\x20' for x in options if x.startswith(input_text) and x not in completed][state]
+            return [escaped_string(x) + ' ' for x in options if x.startswith(input_text) and x not in completed][state]
         return None
     return completer
 
@@ -105,7 +106,8 @@ def complete_filepath(prompt):
     completer = FilePathCompleter()
     readline.set_completer(completer)
     while True:
-        completed, completing = split_escaped(input(prompt + '\n'))
+        stdout.write(prompt)
+        completed, completing = split_escaped(input('\n'))
         if completing:
             completed.append(completing)
         if completed:
@@ -118,7 +120,8 @@ def complete_dirpath(prompt):
     completer = DirPathCompleter()
     readline.set_completer(completer)
     while True:
-        completed, completing = split_escaped(input(prompt + '\n'))
+        stdout.write(prompt)
+        completed, completing = split_escaped(input('\n'))
         if completing:
             completed.append(completing)
         if completed:
@@ -135,7 +138,8 @@ def complete_binary_choice(prompt, truthy_options, falsy_options, default=None):
     completer = make_option_completer(truthy_options + falsy_options, max_completions=1)
     readline.set_completer(completer)
     while True:
-        completed, completing = split_escaped(input(prompt + '\x20'))
+        stdout.write(prompt)
+        completed, completing = split_escaped(input(' '))
         if completing:
             completed.append(completing)
         if not completed:
@@ -161,7 +165,8 @@ def complete_choices(prompt, options, num_choices=None):
     for option in options:
         cprint(' '*2 + option)
     while True:
-        completed, completing = split_escaped(input(prompt + '\n'))
+        stdout.write(prompt)
+        completed, completing = split_escaped(input('\n'))
         if completing:
             completed.append(completing)
         if completed:
