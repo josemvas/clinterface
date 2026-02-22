@@ -1,6 +1,6 @@
 # CLInterface
 
-*CLInterface* is a simple library to display tab-completion prompts
+*CLInterface* is a simple command line interface library
 and interactive menus.
 
 ## Preliminary steps

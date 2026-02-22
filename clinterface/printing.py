@@ -29,7 +29,7 @@ def format_message(func):
                         if k not in tracking_dict.used_keys}
         # If there are unused kwargs, append them to the message
         if unused_kwargs:
-            unused_str = ", ".join(f"{k}={v}" for k, v in unused_kwargs.items())
+            unused_str = ', '.join(f'{k}="{str(v)}"' for k, v in unused_kwargs.items())
             formatted_message = f"{formatted_message} ({unused_str})"
         return func(formatted_message)
     return wrapper

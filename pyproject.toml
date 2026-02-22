@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clinterface"
+version = "0.3.5"
+description = "Simple command line interface library"
+requires-python = ">=3.6"
+license = { text = "LGPLv3+" }
+keywords = ["cli", "prompt"]
+urls = { Homepage = "https://github.com/josemvas/clinterface" }
+classifiers = [
+    "Programming Language :: Python :: 3 :: Only",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+    "Operating System :: POSIX",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
